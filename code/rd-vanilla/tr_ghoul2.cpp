@@ -1942,6 +1942,8 @@ void G2_TransformGhoulBones(boneInfo_v &rootBoneList,mdxaBone_t &rootMatrix, CGh
 // We've come across a surface that's designated as a bolt surface, process it and put it in the appropriate bolt place
 void G2_ProcessSurfaceBolt2(CBoneCache &boneCache, const mdxmSurface_t *surface, int boltNum, boltInfo_v &boltList, const surfaceInfo_t *surfInfo, const model_t *mod,mdxaBone_t &retMatrix)
 {
+	static int test = 0;
+	
  	mdxmVertex_t 	*v, *vert0, *vert1, *vert2;
  	vec3_t			axes[3], sides[3];
  	float			pTri[3][3], d;
@@ -2153,6 +2155,8 @@ void G2_ProcessSurfaceBolt2(CBoneCache &boneCache, const mdxmSurface_t *surface,
 
 void G2_GetBoltMatrixLow(CGhoul2Info &ghoul2,int boltNum,const vec3_t scale,mdxaBone_t &retMatrix)
 {
+	
+
 	if (!ghoul2.mBoneCache)
 	{
 		retMatrix=identityMatrix;
@@ -2162,8 +2166,9 @@ void G2_GetBoltMatrixLow(CGhoul2Info &ghoul2,int boltNum,const vec3_t scale,mdxa
 	CBoneCache &boneCache=*ghoul2.mBoneCache;
 	assert(boneCache.mod);
 	boltInfo_v &boltList=ghoul2.mBltlist;
+	
 	assert(boltNum>=0&&boltNum<(int)boltList.size());
-	if (boltList[boltNum].boneNumber>=0)
+	if (boltList[boltNum].boneNumber>=0) // multiple or zero bones
 	{
 		mdxaSkel_t		*skel;
 		mdxaSkelOffsets_t *offsets;
@@ -2567,6 +2572,34 @@ void R_AddGhoulSurfaces( trRefEntity_t *ent ) {
 	skin_t			*skin;
 	int				modelCount;
 	mdxaBone_t		rootMatrix;
+	
+	
+	float p1[3], p2[3], p3[3], p4[3];
+	for(int j = 0; j < 3; j ++) {
+		p1[j] = ent->e.origin[j];
+
+		p2[j] = ent->e.origin[j];
+		p2[j] += ent->e.axis[0][j]*10;
+
+		p3[j] = ent->e.origin[j];
+		p3[j] += ent->e.axis[1][j]*10;
+
+		p4[j] = ent->e.origin[j];
+		p4[j] += ent->e.axis[2][j]*10;
+	}
+
+
+	qglBegin (GL_LINES);
+	qglColor3f (1,0,0);
+	qglVertex3fv (p1);
+	qglVertex3fv (p2);
+	qglColor3f (0,1,0);
+	qglVertex3fv (p1);
+	qglVertex3fv (p3);
+	qglColor3f (0,0,1);
+	qglVertex3fv (p1);
+	qglVertex3fv (p4);
+	qglEnd ();
 
 	// if we don't want ghoul2 models, then return
 	if (r_noGhoul2->integer)
@@ -2593,6 +2626,7 @@ void R_AddGhoulSurfaces( trRefEntity_t *ent ) {
 		return;
 	}
 	HackadelicOnClient=true;
+
 	// are any of these models setting a new origin?
 	RootMatrix(ghoul2,currentTime, ent->e.modelScale,rootMatrix);
 
@@ -4041,3 +4075,833 @@ qboolean R_LoadMDXA( model_t *mod, void *buffer, const char *mod_name, qboolean 
 	return qtrue;
 }
 
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+#include "qgl.h"
+#include <fstream>
+
+// all bones
+// model_root
+// pelvis
+// Motion
+// lfemurYZ
+// lfemurX
+// ltibia
+// ltalus
+// rfemurYZ
+// rfemurX
+// rtibia
+// rtalus
+// lower_lumbar
+// upper_lumbar
+// thoracic
+// cervical
+// cranium
+// ceyebrow
+// jaw
+// lblip2
+// leye
+// rblip2
+// ltlip2
+// rtlip2
+// reye
+// rclavical
+// rhumerus
+// rhumerusX
+// rradius
+// rradiusX
+// rhand
+// r_d1_j1
+// r_d1_j2
+// r_d2_j1
+// r_d2_j2
+// r_d4_j1
+// r_d4_j2
+// rhang_tag_bone
+// lclavical
+// lhumerus
+// lhumerusX
+// lradius
+// lradiusX
+// lhand
+// l_d4_j1
+// l_d4_j2
+// l_d2_j1
+// l_d2_j2
+// l_d1_j1
+// l_d1_j2
+// ltail
+// rtail
+// lhang_tag_bone
+// face
+
+std::vector<std::string> all_bones = { 
+std::string("model_root"),
+std::string("pelvis"),
+std::string("model_root"),
+std::string("pelvis"),
+std::string("Motion"),
+std::string("lfemurYZ"),
+std::string("lfemurX"),
+std::string("ltibia"),
+std::string("ltalus"),
+std::string("rfemurYZ"),
+std::string("rfemurX"),
+std::string("rtibia"),
+std::string("rtalus"),
+std::string("lower_lumbar"),
+std::string("upper_lumbar"),
+std::string("thoracic"),
+std::string("cervical"),
+std::string("cranium"),
+std::string("ceyebrow"),
+std::string("jaw"),
+std::string("lblip2"),
+std::string("leye"),
+std::string("rblip2"),
+std::string("ltlip2"),
+std::string("rtlip2"),
+std::string("reye"),
+std::string("rclavical"),
+std::string("rhumerus"),
+std::string("rhumerusX"),
+std::string("rradius"),
+std::string("rradiusX"),
+std::string("rhand"),
+std::string("r_d1_j1"),
+std::string("r_d1_j2"),
+std::string("r_d2_j1"),
+std::string("r_d2_j2"),
+std::string("r_d4_j1"),
+std::string("r_d4_j2"),
+std::string("rhang_tag_bone"),
+std::string("lclavical"),
+std::string("lhumerus"),
+std::string("lhumerusX"),
+std::string("lradius"),
+std::string("lradiusX"),
+std::string("lhand"),
+std::string("l_d4_j1"),
+std::string("l_d4_j2"),
+std::string("l_d2_j1"),
+std::string("l_d2_j2"),
+std::string("l_d1_j1"),
+std::string("l_d1_j2"),
+std::string("ltail"),
+std::string("rtail"),
+std::string("lhang_tag_bone"),
+std::string("face"),
+};
+
+
+std::vector<std::string> keep_bones = { 
+// std::string("model_root"),
+// std::string("pelvis"),
+// std::string("Motion"),
+
+std::string("lfemurYZ"),
+// std::string("lfemurX"),
+
+std::string("ltibia"),
+std::string("ltalus"),
+
+std::string("rfemurYZ"),
+// std::string("rfemurX"),
+
+std::string("rtibia"),
+std::string("rtalus"),
+
+std::string("lower_lumbar"),
+std::string("upper_lumbar"),
+
+std::string("thoracic"),
+std::string("cervical"),
+std::string("cranium"),
+
+
+std::string("rhumerus"),
+std::string("rradius"),
+
+// std::string("rhumerusX"),
+// std::string("rradiusX"),
+
+std::string("lhumerus"),
+std::string("lradius"),
+
+// std::string("lhumerusX"),
+// std::string("lradiusX"),
+
+std::string("rhand"),
+std::string("lhand"),
+
+// std::string("rhang_tag_bone"),
+// std::string("lhang_tag_bone"),
+
+std::string("rclavical"),
+std::string("lclavical"),
+
+std::string("face"),
+};
+
+
+
+std::vector<std::string> keep_axis = { 
+
+// std::string("lfemurYZ"),
+// std::string("lfemurX"),
+
+// std::string("ltibia"),
+// std::string("ltalus"),
+
+// std::string("rfemurYZ"),
+// std::string("rfemurX"),
+
+// std::string("rtibia"),
+// std::string("rtalus"),
+
+// std::string("lower_lumbar"),
+// std::string("upper_lumbar"),
+
+// std::string("thoracic"),
+// std::string("cervical"),
+// std::string("cranium"),
+
+
+std::string("rhumerus"),
+std::string("rradius"),
+
+std::string("lhumerus"),
+std::string("lradius"),
+
+std::string("rhand"),
+std::string("lhand"),
+
+// std::string("rclavical"),
+// std::string("lclavical"),
+
+// std::string("face"),
+};
+
+void drawMatrix(std::vector<float>& pos, const mdxaBone_t& matrix) {
+
+	// 3x4 matrix
+	// 
+
+	// display local axis
+	float vec[3], p1[3], p2[3];
+	float scale = 5.;
+
+	vec[0] = matrix.matrix[0][0]*scale; vec[1] = matrix.matrix[1][0]*scale; vec[2] = matrix.matrix[2][0]*scale;
+	// vec[0] = scale; vec[1] = 0.; vec[2] = 0.;
+	
+	p2[0] = pos[0]+vec[0]; p2[1] = pos[1]+vec[1]; p2[2] = pos[2]+vec[2];
+	
+	qglBegin (GL_LINES);
+	qglColor3f (1,0,0);
+	qglVertex3fv (pos.data());
+	qglVertex3fv (p2);
+	qglEnd();
+
+	vec[0] = matrix.matrix[0][1]*scale; vec[1] = matrix.matrix[1][1]*scale; vec[2] = matrix.matrix[2][1]*scale;
+	// vec[0] = 0.; vec[1] = scale; vec[2] = 0.;
+	p2[0] = pos[0]+vec[0]; p2[1] = pos[1]+vec[1]; p2[2] = pos[2]+vec[2];
+	qglBegin (GL_LINES);
+	qglColor3f (0,1,0);
+	qglVertex3fv (pos.data());
+	qglVertex3fv (p2);
+	qglEnd();
+
+	vec[0] = matrix.matrix[0][2]*scale; vec[1] = matrix.matrix[1][2]*scale; vec[2] = matrix.matrix[2][2]*scale;
+	// vec[0] = 0.; vec[1] = 0.; vec[2] = scale;
+	p2[0] = pos[0]+vec[0]; p2[1] = pos[1]+vec[1]; p2[2] = pos[2]+vec[2];
+	qglBegin (GL_LINES);
+	qglColor3f (0,0,1);
+	qglVertex3fv (pos.data());
+	qglVertex3fv (p2);
+	qglEnd();
+}
+
+// copy right to left
+void copy_bone_matrix(mdxaBone_t& left, mdxaBone_t& right) {
+	for(int i = 0; i < 3; i ++) {
+		for(int j = 0; j < 4; j ++) {
+			left.matrix[i][j] = right.matrix[i][j]; 
+		}
+	}
+}
+
+
+// prevent a clash between eigen and X11
+// #ifdef Success
+// #undef Success
+// #endif
+
+// #include <eigen3/Eigen/Dense>
+// #include <eigen3/Eigen/Geometry>
+
+// void Inverse_Matrix(mdxaBone_t *src, mdxaBone_t *dest);
+
+static std::vector<float> custom_vert;
+static float testAngle = 0;
+void drawSkeletons() {
+
+	qglDepthRange( -1000, -1000 );
+
+
+	int model_entity_size = 0;
+
+	for(int i = 0; i < backEnd.refdef.num_entities; i ++) {
+		// if(backEnd.refdef.entities[i].e.reType == RT_MODEL) {
+			model_entity_size += 1;
+		// }
+	}
+
+	custom_vert.resize(24*model_entity_size, 0.);	
+	
+	static int i2 = 0;
+	cout << endl << endl;
+	cout << "*****************************************" << endl;
+	cout << "debug drawing surfaces !! " << i2 << endl;
+	cout << "*****************************************" << endl;
+	cout << endl << endl;
+	i2 += 1;
+
+	int bbox_ind = 0;
+	for(int entity_ind = 0; entity_ind < backEnd.refdef.num_entities; entity_ind ++) {
+
+		// if(backEnd.refdef.entities[i].e.reType != RT_MODEL) {
+		// 	continue;
+		// }
+
+		cout << "origin: " << backEnd.refdef.entities[entity_ind].e.origin[0] << " ,";
+		cout <<  backEnd.refdef.entities[entity_ind].e.origin[1] << ", ";
+		cout << backEnd.refdef.entities[entity_ind].e.origin[2] << endl;
+		float p1[3], p2[3], p3[3], p4[3];
+
+		// for(int j = 0; j < 3; j ++) {
+		// 	p1[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// 	p2[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// 	p3[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// 	p4[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// }
+		// p2[0] += 10;
+		// p3[1] += 10;
+		// p4[2] += 10;
+		for(int j = 0; j < 3; j ++) {
+			p1[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+
+			p2[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+			p2[j] += backEnd.refdef.entities[entity_ind].e.axis[0][j]*10;
+
+			p3[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+			p3[j] += backEnd.refdef.entities[entity_ind].e.axis[1][j]*10;
+
+			p4[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+			p4[j] += backEnd.refdef.entities[entity_ind].e.axis[2][j]*10;
+
+		}
+
+		std::cout << "entity origin: " << p1[0] << " " << p1[1] << " " << p1[2] << std::endl;
+
+
+		// skeleton ?
+		if(backEnd.refdef.entities[entity_ind].e.ghoul2) {
+
+			CGhoul2Info_v& ghoul2 = *backEnd.refdef.entities[entity_ind].e.ghoul2;
+
+			// draw 3d local axis
+			qglBegin (GL_LINES);
+			qglColor3f (1,0,0);
+
+			qglVertex3fv (p1);
+			qglVertex3fv (p2);
+
+			qglColor3f (0,1,0);
+			qglVertex3fv (p1);
+			qglVertex3fv (p3);
+
+			qglColor3f (0,0,1);
+			qglVertex3fv (p1);
+			qglVertex3fv (p4);
+
+			qglEnd ();
+
+			// sort the ghoul 2 models so bolt ons get bolted to the right model
+			int modelCount;
+			int modelList[32];
+			// G2_Sort_Models(ghoul2, modelList, &modelCount);
+			// int i, j;
+
+			// for (j=0; j<modelCount; j++)
+			// {
+			// 	i = modelList[j];
+
+			// }
+
+			// try to access the skeleton limbs
+			vec3_t scale;
+			mdxaBone_t retMatrix, matrix;
+			
+			if(ghoul2.IsValid() && ghoul2.size() > 0 && ghoul2[0].mBltlist.size() > 0)  {
+				
+				for(int model_ind = 0; model_ind < ghoul2.size(); model_ind ++) {
+
+					int	G2_Get_Bone_Index(CGhoul2Info *ghoul2, const char *boneName, qboolean bAddIfNotFound);
+
+
+					// get coordinates of all bolts
+					std::vector<float[3]> bolt_pos(ghoul2[model_ind].mBltlist.size());
+					for(int bolt_ind = 0; bolt_ind < ghoul2[model_ind].mBltlist.size(); bolt_ind ++) {
+
+						std::cout << "bolt index: " << bolt_ind << ", associated bone ind: " << ghoul2[model_ind].mBltlist[bolt_ind].boneNumber << std::endl; 
+
+						// model_ind, bolt_ind
+						G2_GetBoltMatrixLow(ghoul2[model_ind], bolt_ind, scale, retMatrix);
+						std::cout << std::endl << std::endl << std::endl;
+						std::cout << "called! size= " << ghoul2.size() << std::endl;
+
+						G2_GenerateWorldMatrix(backEnd.refdef.entities[entity_ind].e.angles, backEnd.refdef.entities[entity_ind].e.origin);
+						Multiply_3x4Matrix(&matrix, &worldMatrix, &retMatrix);
+
+						p1[0] = matrix.matrix[0][3];
+						p1[1] = matrix.matrix[1][3];
+						p1[2] = matrix.matrix[2][3];
+
+						// record bolt positions
+						bolt_pos[bolt_ind][0] = matrix.matrix[0][3];
+						bolt_pos[bolt_ind][1] = matrix.matrix[1][3];
+						bolt_pos[bolt_ind][2] = matrix.matrix[2][3];
+						
+						p2[0] = p1[0] + 100;
+						p2[1] = p1[1] + 100;
+						p2[2] = p1[2] + 100;
+
+						// draw 3d local axis
+						// qglBegin (GL_LINES);
+						// qglColor3f (1,1,1);
+						// qglVertex3fv (bolt_pos[bolt_ind]);
+						// qglVertex3fv (p2);
+						// qglEnd();
+
+						// // float matrix[3][4];
+						// for(int i = 0; i < 3; i ++) {
+						// 	for(int j = 0; j < 4; j ++) {
+						// 		std::cout << retMatrix.matrix[i][j]  <<" "; 
+						// 	}
+						// 	std::cout << endl;
+						// }
+						// std::cout << std::endl << std::endl << std::endl;
+					}
+
+					// std::cout << "n bones alt: " << ghoul2[model_ind].mBoneCache->mNumBones << std::endl;
+					std::map<std::string, size_t> bone_name_ind; // retreive bone index from name 
+					std::vector<std::vector<float>> bones_pos; 
+					std::vector<mdxaBone_t> bones_matrix; // store the matrix of the bones
+					if(ghoul2[model_ind].mBoneCache != 0) {
+
+						// draw an identity matrix
+						std::vector<float> custom_pos = {backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1]-20, backEnd.refdef.entities[entity_ind].e.origin[2]+50};
+						drawMatrix(custom_pos, identityMatrix);
+						//------------------
+
+						std::cout << "n bones alt: " << ghoul2[model_ind].mBoneCache->mNumBones << std::endl;
+						bones_pos.resize(ghoul2[model_ind].mBoneCache->mNumBones, std::vector<float>(3, 0));
+						bones_matrix.resize(bones_pos.size());
+
+						// record bone positions
+						for(size_t bone_ind = 0; bone_ind <  ghoul2[model_ind].mBoneCache->mNumBones; bone_ind ++) {
+							mdxaSkel_t			*skel;
+							mdxaSkelOffsets_t	*offsets;
+   							offsets = (mdxaSkelOffsets_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t));
+							skel = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[bone_ind]);
+							std::cout << skel->name << std::endl;
+
+							mdxaBone_t test_bolt, ret_matrix;
+							Multiply_3x4Matrix(&test_bolt, (mdxaBone_t *)&ghoul2[model_ind].mBoneCache->Eval(bone_ind), &skel->BasePoseMat); // DEST FIRST ARG
+							Multiply_3x4Matrix(&ret_matrix, &worldMatrix, &test_bolt);
+
+							// -> do not transform by current animation
+							// Multiply_3x4Matrix(&ret_matrix, &worldMatrix, &skel->BasePoseMat);
+
+							bones_pos[bone_ind][0] = ret_matrix.matrix[0][3];
+							bones_pos[bone_ind][1] = ret_matrix.matrix[1][3];
+							bones_pos[bone_ind][2] = ret_matrix.matrix[2][3];
+							bone_name_ind[skel->name] = bone_ind;
+
+							copy_bone_matrix(bones_matrix[bone_ind], ret_matrix); // store the matrix to be used later
+						}
+
+						// draw bones matrix
+						for(size_t bone_ind = 0; bone_ind <  ghoul2[model_ind].mBoneCache->mNumBones; bone_ind ++) {
+							mdxaSkel_t			*skel;
+							mdxaSkelOffsets_t	*offsets;
+   							offsets = (mdxaSkelOffsets_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t));
+							skel = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[bone_ind]);
+							std::cout << skel->name << std::endl;
+
+							bone_name_ind[skel->name] = bone_ind;
+
+							// compute bone position ?
+							mdxaBone_t test_bolt, ret_matrix;
+							// if(skel->name == std::string("rhumerus")) {
+							
+							Multiply_3x4Matrix(&test_bolt, (mdxaBone_t *)&ghoul2[model_ind].mBoneCache->Eval(bone_ind), &skel->BasePoseMat); // DEST FIRST ARG
+							Multiply_3x4Matrix(&ret_matrix, &worldMatrix, &test_bolt);
+
+							if(std::find(keep_bones.begin(), keep_bones.end(), std::string(skel->name)) == keep_bones.end()) {
+								continue;	
+							}
+
+							if(std::find(keep_axis.begin(), keep_axis.end(), std::string(skel->name)) == keep_axis.end()) {
+								continue;
+							}
+
+							// draw the local bone matrix
+							drawMatrix(bones_pos[bone_ind], ret_matrix);
+
+							// draw shifted bone matrix for one specific bone
+							if(std::string(skel->name) == std::string("rhumerus")) {
+								std::vector<float> custom_pos = {backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1]-30, backEnd.refdef.entities[entity_ind].e.origin[2]+50};
+								drawMatrix(custom_pos, ret_matrix);
+							}
+							if(std::string(skel->name) == std::string("rradius")) {
+								std::vector<float> custom_pos = {backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1]-30, backEnd.refdef.entities[entity_ind].e.origin[2]+30};
+								
+								// try to multipy by the inverse of the humerus bone current matrix
+								// to cancel its transformation
+								
+								mdxaBone_t radius_copy;
+								copy_bone_matrix(radius_copy, ret_matrix);
+								for(int i = 0; i < 3; i ++) {
+									radius_copy.matrix[i][3] = 0;
+								}
+
+								mdxaBone_t rhumerus_temp, ruhmerus_inv;
+								copy_bone_matrix(rhumerus_temp, bones_matrix[bone_name_ind["rhumerus"]]);
+								for(int i = 0; i < 3; i ++) {
+									rhumerus_temp.matrix[i][3] = 0;
+								}
+					
+								// void Inverse_Matrix(mdxaBone_t *src, mdxaBone_t *dest);
+
+								// src -> dest
+								Inverse_Matrix(&rhumerus_temp, &ruhmerus_inv);
+
+								mdxaBone_t radius_out;
+								Multiply_3x4Matrix(&radius_out, &ruhmerus_inv, &radius_copy);
+								drawMatrix(custom_pos, radius_out);
+
+								// attempt to compute euler angles
+								// Eigen::Matrix3f m;
+								// for(int i = 0; i < 3; i ++) {
+								// 	for(int j = 0; j < 3; j ++) {
+								// 		m(i,j) = ruhmerus_inv.matrix[i][j];
+								// 	}
+								// }
+								// Eigen::Matrix<float,3,1> res = m.eulerAngles(2,1,0); // 012 ; 021 ; 201 ; 210 ; 102 ; 120  
+
+								// Eigen::Matrix<float,3,1> res = m.canonicalEulerAngles(2,1,0); // 012 ; 021 ; 201 ; 210 ; 102 ; 120  
+
+								// std::cout << std::endl << std::endl;
+								// std::cout << "Angles extracted: " << res(0) << " " << res(1) << " " << res(2) << std::endl;
+								// std::cout << std::endl << std::endl;
+								// vec3_t test_angles = {res(0)*360./3.1415, res(0)*360./3.1415, res(0)*360./3.1415};
+								// vec3_t test_angles = {0, 0, 0};
+								// test_angles[ROLL] = res(0)*180./3.1415;
+								// test_angles[PITCH] = res(1)*180./3.1415;
+								// test_angles[YAW] = res(2)*180./3.1415;
+
+								// / angle indexes
+								// #define	PITCH	0		// up / down
+								// #define	YAW		1		// left / right
+								// #define	ROLL	2		// fall over
+
+								// debug from https://stackoverflow.com/questions/11514063/extract-yaw-pitch-and-roll-from-a-rotationmatrix
+								// yaw=atan2(R(2,1),R(1,1));
+								// pitch=atan2(-R(3,1),sqrt(R(3,2)^2+R(3,3)^2)));
+								// roll=atan2(R(3,2),R(3,3));
+								
+								// test_angles[YAW] = atan2(rhumerus_temp.matrix[1][0],rhumerus_temp.matrix[0][0]);
+								// test_angles[PITCH] = atan2(-rhumerus_temp.matrix[2][0], sqrt( rhumerus_temp.matrix[2][1]*rhumerus_temp.matrix[2][1] + rhumerus_temp.matrix[2][2]*rhumerus_temp.matrix[2][2] ));
+								// test_angles[ROLL] = atan2( rhumerus_temp.matrix[2][1], rhumerus_temp.matrix[2][2]);
+
+								// test_angles[YAW] = test_angles[YAW]*180./3.1415;
+								// test_angles[PITCH] = test_angles[PITCH]*180./3.1415;
+								// test_angles[ROLL] = test_angles[ROLL]*180./3.1415;
+
+								// // G2_Set_Bone_Angles(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName, const float *angles, const int flags, const Eorientations up, const Eorientations left, const Eorientations forward, const int blendTime, const int currentTime);
+								// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", test_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
+
+								// vec3_t debug_angles = {90, 0, 0};
+								// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", debug_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
+
+							}
+
+						}
+
+
+
+						for(size_t bone_ind = 0; bone_ind <  ghoul2[model_ind].mBoneCache->mNumBones; bone_ind ++) {
+							mdxaSkel_t			*skel;
+							mdxaSkelOffsets_t	*offsets;
+   							offsets = (mdxaSkelOffsets_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t));
+							skel = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[bone_ind]);
+
+							for(size_t ch_ind = 0; ch_ind < skel->numChildren; ch_ind ++) {
+								int child_ind = skel->children[ch_ind];
+								mdxaSkel_t * skel_child = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[child_ind]);
+
+								if(std::find(keep_bones.begin(), keep_bones.end(), std::string(skel_child->name)) == keep_bones.end()) {
+									continue;	
+								}
+
+								for(int j = 0; j < 3; j ++) {
+									p1[j] = bones_pos[bone_ind][j];
+									p2[j] = bones_pos[child_ind][j];
+								}
+								qglBegin (GL_LINES);
+								qglColor3f (1,1,1);
+								qglVertex3fv (p1);
+								qglVertex3fv (p2);
+								qglEnd();
+							}
+						}
+					
+					}
+
+					std::cout << "nb bones for this model: " << ghoul2[model_ind].mBlist.size() << std::endl;
+					for(int bone_ind = 0; bone_ind < ghoul2[model_ind].mBlist.size(); bone_ind ++) {
+					
+						// void G2_GetBoneMatrixLow(CGhoul2Info &ghoul2,int boneNum,const vec3_t scale,mdxaBone_t &retMatrix,mdxaBone_t *&retBasepose,mdxaBone_t *&retBaseposeInv);
+						// int G2_GetParentBoneMatrixLow(CGhoul2Info &ghoul2,int boneNum,const vec3_t scale,mdxaBone_t &retMatrix,mdxaBone_t *&retBasepose,mdxaBone_t *&retBaseposeInv);
+
+						vec3_t scale = {1., 1., 1.};
+						// G2_GetBoneMatrixLow(ghoul2[model_ind], bone_ind, scale, ghoul2[model_ind].mBlist[bone_ind].originalTrueBoneMatrix, ghoul2[model_ind].mBlist[bone_ind].basepose, ghoul2[model_ind].mBlist[bone_ind].baseposeInv);
+						// G2_GetBoneBasepose(ghoul2[model_ind],bone_ind, ghoul2[model_ind].mBlist[bone_ind].basepose, ghoul2[model_ind].mBlist[bone_ind].baseposeInv);
+						// mdxaBone_t& basePos =  ghoul2[model_ind].mBlist[bone_ind].newMatrix;
+
+						// get the parent bone index and then get the two associated bolts
+
+						// G2_GetParentBoneMatrixLow(ghoul2[model_ind], bone_ind, scale, ghoul2[model_ind].mBlist[bone_ind].parentOriginalTrueBoneMatrix, ghoul2[model_ind].mBlist[bone_ind].baseposeParent, ghoul2[model_ind].mBlist[bone_ind].baseposeInvParent);
+						// mdxaBone_t basePosParent = *ghoul2[model_ind].mBlist[bone_ind].baseposeParent;
+
+
+						std::cout << endl << endl;
+						std::cout << "Current bone number: " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
+						std::cout << "matrix: " << std::endl;
+						for(int i = 0; i < 3; i ++) {
+							for(int j = 0; j < 4; j ++) {
+								std::cout << ghoul2[model_ind].mBlist[bone_ind].matrix.matrix[i][j]  <<" "; 
+							}
+							std::cout << endl;
+						}
+						std::cout << std::endl;
+						for(int i = 0; i < 3; i ++) {
+							for(int j = 0; j < 4; j ++) {
+								std::cout << ghoul2[model_ind].mBlist[bone_ind].newMatrix.matrix[i][j]  <<" "; 
+							}
+							std::cout << endl;
+						}
+						std::cout << "original origin: " << std::endl;
+						std::cout << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[0] << ", " << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[1] <<  " " << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[2] << std::endl;
+
+						std::cout << "last position: " << std::endl;
+						std::cout << ghoul2[model_ind].mBlist[bone_ind].lastPosition[0] << ", " << ghoul2[model_ind].mBlist[bone_ind].lastPosition[1] <<  " " << ghoul2[model_ind].mBlist[bone_ind].lastPosition[2] << std::endl;
+
+
+						int bolt_ind = G2_Find_Bolt_Bone_Num(ghoul2[model_ind].mBltlist, ghoul2[model_ind].mBlist[bone_ind].boneNumber);
+						std::cout << "Bolt ind for this bone: " << bolt_ind << std::endl;
+						std::cout << "verif bone ind from bolt ind: " << ghoul2[model_ind].mBltlist[bolt_ind].boneNumber << std::endl;
+
+
+						std::cout << "Bone index compare: " << bone_ind << ", " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
+
+						std::cout << "Parent Bone index compare: " << ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex;
+						std::cout << ", " << ghoul2[model_ind].mBlist[ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex].boneNumber << std::endl;
+
+						float test2[3];
+						test2[0] = bolt_pos[bolt_ind][0]+10;
+						test2[1] = bolt_pos[bolt_ind][1]+10;
+						test2[2] = bolt_pos[bolt_ind][2]+10;
+
+						// qglBegin (GL_LINES);
+						// qglColor3f (0,0,1);
+						// qglVertex3fv (bolt_pos[bolt_ind]);
+						// qglVertex3fv (test2);
+						// qglEnd();
+
+						// mdxaSkel_t
+						// mdxaSkel_t			*skel;
+						// mdxaSkelOffsets_t	*offsets;
+   						// offsets = (mdxaSkelOffsets_t *)((byte *)ghlInfo->aHeader + sizeof(mdxaHeader_t));
+						// skel = (mdxaSkel_t *)((byte *)ghlInfo->aHeader + sizeof(mdxaHeader_t) + offsets->offsets[0]);
+						// From int G2_Find_Bone(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName)
+
+						mdxaSkel_t			*skel;
+						mdxaSkelOffsets_t	*offsets;
+   						offsets = (mdxaSkelOffsets_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t));
+						skel = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[ghoul2[model_ind].mBlist[bone_ind].boneNumber]);
+						std::cout << "skel name: " << skel->name << std::endl;
+						std::cout << "num children: " << skel->numChildren << std::endl;
+						std::cout << std::endl << std::endl;
+						for(int i = 0; i < skel->numChildren; i ++) {
+
+							mdxaSkel_t* skelbis = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[skel->children[i]]);
+							
+							std::cout << "children " << i << " -> " << skel->children[i] << " "; 
+							std::cout << skelbis->name << std::endl;
+
+							mdxaBone_t test_bolt, ret_matrix;
+							Multiply_3x4Matrix(&test_bolt, (mdxaBone_t *)&ghoul2[model_ind].mBoneCache->Eval(skel->children[i]), &skelbis->BasePoseMat); // DEST FIRST ARG
+							Multiply_3x4Matrix(&ret_matrix, &worldMatrix, &test_bolt);
+							for(int j = 0; j < 3; j ++) {
+								p1[j] = ret_matrix.matrix[j][3];
+								p2[j] = p1[j] + 10;
+							}
+							// qglBegin (GL_LINES);
+							// qglColor3f (0,1,0);
+							// qglVertex3fv (p1);
+							// qglVertex3fv (p2);
+							// qglEnd();
+
+							// for(int j = 0; j < 3; j ++) {
+							// 	for(int k = 0; k < 4; k ++) {
+							// 		std::cout << skelbis->BasePoseMat.matrix[j][k] << " ";
+							// 	}
+							// 	std::cout << std::endl;
+							// }
+							// std::cout << std::endl;
+							
+							for(int j = 0; j < 3; j ++) {
+								for(int k = 0; k < 4; k ++) {
+									std::cout << ghoul2[model_ind].mBoneCache->mFinalBones[skel->children[i]].boneMatrix.matrix[j][k] << " ";
+								}
+								std::cout << std::endl;
+							}
+							std::cout << std::endl;
+
+							int bolt_ind = G2_Find_Bolt_Bone_Num(ghoul2[model_ind].mBltlist, skel->children[i]);
+
+							// try to display the bone
+							for(int j = 0; j < 3; j ++) {
+								p1[j] = ghoul2[model_ind].mBoneCache->mFinalBones[skel->children[i]].boneMatrix.matrix[j][3];
+								p1[j] += backEnd.refdef.entities[entity_ind].e.origin[j];
+								p1[j] += bolt_pos[bolt_ind][j];
+								p2[j] = p1[j]+10;
+							}
+							// qglBegin (GL_LINES);
+							// qglColor3f (0,1,0);
+							// qglVertex3fv (p1);
+							// qglVertex3fv (p2);
+							// qglEnd();
+
+
+						}
+						int bone_number_from_skel = G2_Find_Bone(&ghoul2[model_ind], ghoul2[model_ind].mBlist, skel->name);
+						std::cout << "bone index from skeleton name: " << bone_number_from_skel << " vs " << bone_ind << " and " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
+
+						// int parent_bone_ind = G2_Find_Bone_In_List(ghoul2[model_ind].mBlist, ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex);
+						// std::cout << "parent bone index alternative: " << parent_bone_ind << std::endl;
+
+						mdxaSkel_t	*skel_parent = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[skel->parent]);
+						std::cout << "parent bone name: " << skel_parent->name << std::endl;
+
+						std::cout << "attempt get list of bones" << std::endl;
+						std::cout << ghoul2[model_ind].mBoneCache->header->numBones << std::endl;
+						std::cout << std::endl;
+
+						// if(ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex >= 0) {
+						// 	int parent_bolt_ind = G2_Find_Bolt_Bone_Num(ghoul2[model_ind].mBltlist, ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex);
+						// 	std::cout << "Parent Bolt ind for this bone: " << parent_bolt_ind << std::endl;
+
+						// }
+
+						// attempt bone position with the right index
+						// if(ghoul2[model_ind].mBlist[bone_ind].boneNumber >= 0) {
+						// 	G2_GetBoneMatrixLow(ghoul2[model_ind], ghoul2[model_ind].mBlist[bone_ind].boneNumber, scale, ghoul2[model_ind].mBlist[bone_ind].originalTrueBoneMatrix, ghoul2[model_ind].mBlist[bone_ind].basepose , ghoul2[model_ind].mBlist[bone_ind].baseposeInv);
+						// 	std::cout << "new attempt bone position: " << std::endl;
+						// 	for(int i = 0; i < 3; i ++) {
+						// 		for(int j = 0; j < 4; j ++) {
+						// 			std::cout << ghoul2[model_ind].mBlist[bone_ind].originalTrueBoneMatrix.matrix[i][j] << " ";
+						// 		}
+						// 		std::cout << std::endl;
+						// 	}
+						// 	std::cout << std::endl;
+						// 	p1[0] = ghoul2[model_ind].mBlist[bone_ind].originalTrueBoneMatrix.matrix[0][3];
+						// 	p1[1] = ghoul2[model_ind].mBlist[bone_ind].originalTrueBoneMatrix.matrix[1][3];
+						// 	p1[2] = ghoul2[model_ind].mBlist[bone_ind].originalTrueBoneMatrix.matrix[2][3];
+
+						// 	int bParentListIndex = G2_Find_Bone(&ghoul2[model_ind], ghoul2[model_ind].mBlist, skel_parent->name);
+
+						// 	if(bParentListIndex > 0) {
+								
+						// 		// int parent_bolt_ind = G2_Find_Bolt_Bone_Num(ghoul2[model_ind].mBltlist, ghoul2[model_ind].mBlist[bParentListIndex].boneNumber);
+						// 		// std::cout << "Parent Bolt ind for this bone: " << parent_bolt_ind << std::endl;
+								
+						// 		G2_GetBoneMatrixLow(ghoul2[model_ind], ghoul2[model_ind].mBlist[bParentListIndex].boneNumber, scale, ghoul2[model_ind].mBlist[bParentListIndex].originalTrueBoneMatrix, ghoul2[model_ind].mBlist[bParentListIndex].basepose , ghoul2[model_ind].mBlist[bParentListIndex].baseposeInv);
+						// 		p2[0] = ghoul2[model_ind].mBlist[bParentListIndex].originalTrueBoneMatrix.matrix[0][3];
+						// 		p2[1] = ghoul2[model_ind].mBlist[bParentListIndex].originalTrueBoneMatrix.matrix[1][3];
+						// 		p2[2] = ghoul2[model_ind].mBlist[bParentListIndex].originalTrueBoneMatrix.matrix[2][3];
+								
+						// 		std::cout << "p1 test: " << p1[0] << ", " << p1[1] << ", " << p1[2] << std::endl;
+						// 		std::cout << "p2 test: " << p2[0] << ", " << p2[1] << ", " << p2[2] << std::endl;
+						// 	}
+
+						// }
+
+						// G2_GenerateWorldMatrix(backEnd.refdef.entities[entity_ind].e.angles, backEnd.refdef.entities[entity_ind].e.origin);
+						
+						// Multiply_3x4Matrix(&matrix, &worldMatrix, &basePos);
+						// p1[0] = matrix.matrix[0][3];
+						// p1[1] = matrix.matrix[1][3];
+						// p1[2] = matrix.matrix[2][3];
+						// p1[0] = ghoul2[model_ind].mBlist[bone_ind].lastPosition[0]+backEnd.refdef.entities[entity_ind].e.origin[0];
+						// p1[1] = ghoul2[model_ind].mBlist[bone_ind].lastPosition[1]+backEnd.refdef.entities[entity_ind].e.origin[1];
+						// p1[2] = ghoul2[model_ind].mBlist[bone_ind].lastPosition[2]+backEnd.refdef.entities[entity_ind].e.origin[2];
+
+						// p2[0] = p1[0]+10;
+						// p2[1] = p1[1]+10;
+						// p2[2] = p1[2]+10;
+
+						// qglBegin (GL_LINES);
+						// qglColor3f (1,0,0);
+						// qglVertex3fv (p1);
+						// qglVertex3fv (p2);
+						// qglEnd();
+
+						// std::cout << "Parent bone: " << std::endl;
+						// for(int i = 0; i < 3; i ++) {
+						// 	for(int j = 0; j < 4; j ++) {
+						// 		std::cout << baseParentPos->matrix[i][j]  <<" "; 
+						// 	}
+						// 	std::cout << endl;
+						// }
+						// std::cout << endl << endl;
+
+
+					}
+
+
+				}
+
+
+
+			}
+
+		}
+		
+
+		// qglTranslatef(-backEnd.refdef.entities[entity_ind].e.origin[0], -backEnd.refdef.entities[entity_ind].e.origin[1], -backEnd.refdef.entities[entity_ind].e.origin[2]);
+
+
+		bbox_ind ++;
+		// if(bbox_ind > 10) {
+		// 	break;
+		// }
+	}
+
+		qglDepthRange( 0, 1 );
+
+}

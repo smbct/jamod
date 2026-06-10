@@ -641,6 +641,12 @@ typedef struct
 static postRender_t g_postRenders[MAX_POST_RENDERS];
 static int g_numPostRenders = 0;
 
+#include <iostream>
+using namespace std;
+
+void drawEntitiesBBox();
+void drawSkeletons();
+
 void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	shader_t		*shader, *oldShader;
 	int				fogNum, oldFogNum;
@@ -655,6 +661,10 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	postRender_t	*pRender;
 	bool			didShadowPass = false;
 
+
+	
+	
+
 	if (g_bRenderGlowingObjects)
 	{ //only shadow on initial passes
 		didShadowPass = true;
@@ -665,6 +675,36 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 	// clear the z buffer, set the modelview, etc
 	RB_BeginDrawingView ();
+
+
+
+
+
+	// static int i2 = 0;
+	// cout << endl << endl;
+	// cout << "*****************************************" << endl;
+	// cout << "debug drawing surfaces !! " << i2 << endl;
+	// cout << "*****************************************" << endl;
+	// cout << endl << endl;
+	// i2 += 1;
+	// for(int i = 0; i < backEnd.refdef.num_entities; i ++) {
+
+	// 	qhandle_t hModel = backEnd.refdef.entities[i].e.hModel;
+
+	// 	vec3_t bounds1; vec3_t bounds2;
+
+	// 	R_ModelBounds(hModel, bounds1, bounds2);
+	// 	cout << "entity " << i << endl;
+	// 	cout << "bounds1: " << bounds1[0] << " ; " << bounds1[1] << " ; " << bounds1[2] << endl;
+	// 	cout << "bounds2: " << bounds2[0] << " ; " << bounds2[1] << " ; " << bounds2[2] << endl;
+		
+	// 	cout << endl;
+	// }
+
+
+
+
+
 
 	// draw everything
 	oldEntityNum = -1;
@@ -685,6 +725,22 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			continue;
 		}
 		R_DecomposeSort( drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted );
+
+		// my modding stuff
+		// {
+		// 	curEnt = &backEnd.refdef.entities[entityNum];
+		// 	cout << endl << endl;
+		// 	cout << "tesest from renderer !!" << endl;
+		// 	vec3_t bounds1; vec3_t bounds2;
+		// 	cout << "Model: " << curEnt->e.hModel << endl; 
+		// 	R_ModelBounds(curEnt->e.hModel, bounds1, bounds2);
+		// 	cout << "bounds1: " << bounds1[0] << " ; " << bounds1[1] << " ; " << bounds1[2] << endl;
+		// 	// cout << "bounds2: " << bounds2.x << " ; " << bounds2.y << " ; " << bounds2.z << endl;
+		// 	cout << endl << endl;
+
+		// 	// 	void	(*GetModelBounds)(refEntity_t *refEnt, vec3_t bounds1, vec3_t bounds2);
+
+		// }
 
 		// If we're rendering glowing objects, but this shader has no stages with glow, skip it!
 		if ( g_bRenderGlowingObjects && !shader->hasGlow )
@@ -709,6 +765,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 				(backEnd.refdef.entities[entityNum].e.renderfx & RF_FORCE_ENT_ALPHA))
 			{ //must render last
 				curEnt = &backEnd.refdef.entities[entityNum];
+
 				pRender = &g_postRenders[g_numPostRenders];
 
 				g_numPostRenders++;
@@ -1320,7 +1377,11 @@ const void	*RB_DrawSurfs( const void *data ) {
 	backEnd.refdef = cmd->refdef;
 	backEnd.viewParms = cmd->viewParms;
 
+
 	RB_RenderDrawSurfList( cmd->drawSurfs, cmd->numDrawSurfs );
+
+	
+
 
 	// Dynamic Glow/Flares:
 	/*
@@ -1387,6 +1448,9 @@ const void	*RB_DrawSurfs( const void *data ) {
 		// Draw the glow additively over the screen.
 		RB_DrawGlowOverlay();
 	}
+
+	drawEntitiesBBox();
+	drawSkeletons();
 
 	return (const void *)(cmd + 1);
 }

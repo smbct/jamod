@@ -174,7 +174,7 @@ const mdxmSurface_t *G2_FindSurface(CGhoul2Info *ghlInfo, surfaceInfo_v &slist, 
 	int						i = 0;
 	// find the model we want
 	assert(G2_MODEL_OK(ghlInfo));
-
+	
 	const mdxmHierarchyOffsets_t *surfIndexes = (mdxmHierarchyOffsets_t *)((byte *)ghlInfo->currentModel->mdxm + sizeof(mdxmHeader_t));
 
  	// first find if we already have this surface in the list

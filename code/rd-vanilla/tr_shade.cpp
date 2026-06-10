@@ -362,7 +362,6 @@ static void DrawTris (shaderCommands_t *input)
 	{
 		// same old showtris
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
-		qglDepthRange( 0, 0 );
 
 		qglDisableClientState (GL_COLOR_ARRAY);
 		qglDisableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -381,7 +380,6 @@ static void DrawTris (shaderCommands_t *input)
 			GLimp_LogComment( "glUnlockArraysEXT\n" );
 		}
 
-		qglDepthRange( 0, 1 );
 	}
 }
 
@@ -398,7 +396,6 @@ static void DrawNormals (shaderCommands_t *input) {
 
 	GL_Bind( tr.whiteImage );
 	qglColor3f (1,1,1);
-	qglDepthRange( 0, 0 );	// never occluded
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
 	qglBegin (GL_LINES);
@@ -409,7 +406,6 @@ static void DrawNormals (shaderCommands_t *input) {
 	}
 	qglEnd ();
 
-	qglDepthRange( 0, 1 );
 }
 
 
@@ -2193,6 +2189,266 @@ void RB_StageIteratorGeneric( void )
 #endif
 }
 
+#include <iostream>
+using namespace std;
+#include "qgl.h"
+#include <fstream>
+
+static std::vector<float> custom_vert;
+static float testAngle = 0;
+void drawEntitiesBBox() {
+
+	int model_entity_size = 0;
+
+	for(int i = 0; i < backEnd.refdef.num_entities; i ++) {
+		// if(backEnd.refdef.entities[i].e.reType == RT_MODEL) {
+			model_entity_size += 1;
+		// }
+	}
+
+	custom_vert.resize(24*model_entity_size, 0.);	
+	
+	static int i2 = 0;
+	cout << endl << endl;
+	cout << "*****************************************" << endl;
+	cout << "debug drawing surfaces !! " << i2 << endl;
+	cout << "*****************************************" << endl;
+	cout << endl << endl;
+	i2 += 1;
+
+		qglDepthRange( 0, 1 );
+
+	
+	int bbox_ind = 0;
+	for(int entity_ind = 0; entity_ind < backEnd.refdef.num_entities; entity_ind ++) {
+
+		// if(backEnd.refdef.entities[i].e.reType != RT_MODEL) {
+		// 	continue;
+		// }
+
+		qhandle_t hModel = backEnd.refdef.entities[entity_ind].e.hModel;
+
+		vec3_t bounds1; vec3_t bounds2;
+
+		R_ModelBounds(hModel, bounds1, bounds2);
+		cout << "entity " << entity_ind << endl;
+		cout << "bounds1: " << bounds1[0] << " ; " << bounds1[1] << " ; " << bounds1[2] << endl;
+		cout << "bounds2: " << bounds2[0] << " ; " << bounds2[1] << " ; " << bounds2[2] << endl;
+		cout << endl;
+		
+		
+		int start_ind = bbox_ind*24;
+
+		custom_vert[start_ind] = bounds1[0];
+		custom_vert[start_ind+1] = bounds1[1];
+		custom_vert[start_ind+2] = bounds1[2];
+
+		custom_vert[start_ind+3] = bounds1[0];
+		custom_vert[start_ind+4] = bounds2[1];
+		custom_vert[start_ind+5] = bounds1[2];
+
+		custom_vert[start_ind+6] = bounds2[0];
+		custom_vert[start_ind+7] = bounds2[1];
+		custom_vert[start_ind+8] = bounds1[2];
+
+		custom_vert[start_ind+9] = bounds2[0];
+		custom_vert[start_ind+10] = bounds1[1];
+		custom_vert[start_ind+11] = bounds1[2];
+
+		custom_vert[start_ind+12] = bounds1[0];
+		custom_vert[start_ind+13] = bounds1[1];
+		custom_vert[start_ind+14] = bounds2[2];
+
+		custom_vert[start_ind+15] = bounds1[0];
+		custom_vert[start_ind+16] = bounds2[1];
+		custom_vert[start_ind+17] = bounds2[2];
+
+		custom_vert[start_ind+18] = bounds2[0];
+		custom_vert[start_ind+19] = bounds2[1];
+		custom_vert[start_ind+20] = bounds2[2];
+
+		custom_vert[start_ind+21] = bounds2[0];
+		custom_vert[start_ind+22] = bounds1[1];
+		custom_vert[start_ind+23] = bounds2[2];
+
+		// float origin[3];
+		// for(int j = 0; j < 3; j ++) {
+		// 	origin[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// }
+		// for(int k = start_ind; k < start_ind+24; k ++) {
+		// 	custom_vert[k] += origin[k%3];
+		// }
+
+
+
+		// drawing part
+		// GL_Bind( tr.whiteImage );
+		// qglColor3f( 1.0, 1.0, 1.0); //white
+
+		// // same old showtris
+		// GL_State( GLS_POLYMODE_LINE );
+
+
+		// qglDisableClientState (GL_COLOR_ARRAY);
+		// qglDisableClientState (GL_TEXTURE_COORD_ARRAY);
+
+		// qglVertexPointer (3, GL_FLOAT, 0, &custom_vert.data()[start_ind]);	// padded for SIMD
+
+		// R_DrawElements( 6, &custom_ind.data()[start_ind] );
+
+
+		GL_Bind( tr.whiteImage );
+		qglColor3f (1,1,1);
+		GL_State( GLS_POLYMODE_LINE );
+
+		qglPushMatrix();
+
+		qglTranslatef(backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1], backEnd.refdef.entities[entity_ind].e.origin[2]);
+		
+		// qglRotatef(backEnd.refdef.entities[entity_ind].e.axis[0][0], backEnd.refdef.entities[entity_ind].e.axis[0][1], backEnd.refdef.entities[entity_ind].e.axis[0][2]);
+
+		// qglRotatef(testAngle, 0, 0, 1);
+		// testAngle += 0.01;
+
+		float angle_x = backEnd.refdef.entities[entity_ind].e.axis[0][0];
+		float angle_y = backEnd.refdef.entities[entity_ind].e.axis[1][1];
+		float angle_z = backEnd.refdef.entities[entity_ind].e.axis[2][2];
+
+		angle_x = acos(angle_x)*180./3.14;
+		angle_y = acos(angle_y)*180./3.14;
+		angle_z = acos(angle_z)*180./3.14;
+
+		// qglRotatef(angle_x, 0., 0., 1.);
+		// qglRotatef(angle_y, 0., 1., 0.);
+		// qglRotatef(angle_x, 1., 0., 0.);
+
+
+		cout << flush;
+		cout << "z angle: " << angle_z << endl;
+		
+		// ofstream file("test_file.txt");
+		// file << testAngle << endl;
+		// file.close();
+
+		qglBegin (GL_LINES);
+		qglVertex3fv (&custom_vert[start_ind]);
+		qglVertex3fv (&custom_vert[start_ind+3]);
+		qglVertex3fv (&custom_vert[start_ind+3]);
+		qglVertex3fv (&custom_vert[start_ind+6]);
+		qglVertex3fv (&custom_vert[start_ind+6]);
+		qglVertex3fv (&custom_vert[start_ind+9]);
+		qglVertex3fv (&custom_vert[start_ind+9]);
+		qglVertex3fv (&custom_vert[start_ind]);
+
+
+		qglVertex3fv (&custom_vert[start_ind+12]);
+		qglVertex3fv (&custom_vert[start_ind+3+12]);
+		qglVertex3fv (&custom_vert[start_ind+3+12]);
+		qglVertex3fv (&custom_vert[start_ind+6+12]);
+		qglVertex3fv (&custom_vert[start_ind+6+12]);
+		qglVertex3fv (&custom_vert[start_ind+9+12]);
+		qglVertex3fv (&custom_vert[start_ind+9+12]);
+		qglVertex3fv (&custom_vert[start_ind+12]);
+
+		qglVertex3fv (&custom_vert[start_ind]);
+		qglVertex3fv (&custom_vert[start_ind+12]);
+
+		qglVertex3fv (&custom_vert[start_ind+3]);
+		qglVertex3fv (&custom_vert[start_ind+3+12]);
+
+		qglVertex3fv (&custom_vert[start_ind+6]);
+		qglVertex3fv (&custom_vert[start_ind+6+12]);
+
+		qglVertex3fv (&custom_vert[start_ind+9]);
+		qglVertex3fv (&custom_vert[start_ind+9+12]);
+
+		qglEnd ();
+		qglPopMatrix();
+
+
+		cout << "origin: " << backEnd.refdef.entities[entity_ind].e.origin[0] << " ,";
+		cout <<  backEnd.refdef.entities[entity_ind].e.origin[1] << ", ";
+		cout << backEnd.refdef.entities[entity_ind].e.origin[2] << endl;
+		float p1[3], p2[3], p3[3], p4[3];
+
+		// for(int j = 0; j < 3; j ++) {
+		// 	p1[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// 	p2[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// 	p3[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// 	p4[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+		// }
+		// p2[0] += 10;
+		// p3[1] += 10;
+		// p4[2] += 10;
+		for(int j = 0; j < 3; j ++) {
+			p1[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+
+			p2[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+			p2[j] += backEnd.refdef.entities[entity_ind].e.axis[0][j]*10;
+
+			p3[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+			p3[j] += backEnd.refdef.entities[entity_ind].e.axis[1][j]*10;
+
+			p4[j] = backEnd.refdef.entities[entity_ind].e.origin[j];
+			p4[j] += backEnd.refdef.entities[entity_ind].e.axis[2][j]*10;
+
+		}
+
+
+		// skeleton ?
+		if(backEnd.refdef.entities[entity_ind].e.ghoul2) {
+
+			CGhoul2Info_v& ghoul2 = *backEnd.refdef.entities[entity_ind].e.ghoul2;
+
+			// draw 3d local axis
+			// qglBegin (GL_LINES);
+			// qglColor3f (1,0,0);
+
+			// qglVertex3fv (p1);
+			// qglVertex3fv (p2);
+
+			// qglColor3f (0,1,0);
+			// qglVertex3fv (p1);
+			// qglVertex3fv (p3);
+
+			// qglColor3f (0,0,1);
+			// qglVertex3fv (p1);
+			// qglVertex3fv (p4);
+
+			// qglEnd ();
+
+			// sort the ghoul 2 models so bolt ons get bolted to the right model
+			int modelCount;
+			int modelList[32];
+			// G2_Sort_Models(ghoul2, modelList, &modelCount);
+			// int i, j;
+
+			// for (j=0; j<modelCount; j++)
+			// {
+			// 	i = modelList[j];
+
+			// }
+
+			// try to access the skeleton limbs
+			// vec3_t scale;
+			// mdxaBone_t retMatrix;
+			// G2_GetBoltMatrixLow(backEnd.refdef.entities[entity_ind].e.ghoul2,0, scale, retMatrix);
+
+		}
+		
+
+		// qglTranslatef(-backEnd.refdef.entities[entity_ind].e.origin[0], -backEnd.refdef.entities[entity_ind].e.origin[1], -backEnd.refdef.entities[entity_ind].e.origin[2]);
+
+
+		bbox_ind ++;
+		// if(bbox_ind > 10) {
+		// 	break;
+		// }
+	}
+
+
+}
+
 
 /*
 ** RB_EndSurface
@@ -2281,6 +2537,12 @@ void RB_EndSurface( void ) {
 	if ( r_shownormals->integer ) {
 		DrawNormals (input);
 	}
+
+
+	// debug draw trisurf
+	// drawEntitiesBBox();
+
+
 
 	// clear shader so we can tell we don't have any unclosed surfaces
 	tess.numIndexes = 0;

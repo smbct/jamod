@@ -1193,7 +1193,11 @@ Ghoul2 Insert End
 	short			rootBone;
 	short			footLBone;
 	short			footRBone;
+
 	short			humerusRBone;
+	
+	// custom bones
+	short			radiusRBone;
 
 	short			genericBone1;		// For bones special to an entity
 	short			genericBone2;
@@ -1425,7 +1429,11 @@ Ghoul2 Insert End
 		saved_game.write<int16_t>(rootBone);
 		saved_game.write<int16_t>(footLBone);
 		saved_game.write<int16_t>(footRBone);
+		
 		saved_game.write<int16_t>(humerusRBone);
+		// custom
+		saved_game.write<int16_t>(radiusRBone);
+
 		saved_game.write<int16_t>(genericBone1);
 		saved_game.write<int16_t>(genericBone2);
 		saved_game.write<int16_t>(genericBone3);
@@ -1614,7 +1622,11 @@ Ghoul2 Insert End
 		saved_game.read<int16_t>(rootBone);
 		saved_game.read<int16_t>(footLBone);
 		saved_game.read<int16_t>(footRBone);
+		
 		saved_game.read<int16_t>(humerusRBone);
+		// custom
+		saved_game.read<int16_t>(radiusRBone);
+
 		saved_game.read<int16_t>(genericBone1);
 		saved_game.read<int16_t>(genericBone2);
 		saved_game.read<int16_t>(genericBone3);

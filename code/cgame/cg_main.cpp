@@ -341,6 +341,15 @@ vmCvar_t	cg_fovViewmodelAdjust;
 
 vmCvar_t	cg_scaleVehicleSensitivity;
 
+// custom variables
+vmCvar_t		cg_humerusRBone_angle_0;
+vmCvar_t		cg_humerusRBone_angle_1;
+vmCvar_t		cg_humerusRBone_angle_2;
+
+vmCvar_t		cg_radiusRBone_angle_0;
+vmCvar_t		cg_radiusRBone_angle_1;
+vmCvar_t		cg_radiusRBone_angle_2;
+
 typedef struct {
 	vmCvar_t	*vmCvar;
 	const char	*cvarName;
@@ -459,7 +468,18 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_fovViewmodelAdjust, "cg_fovViewmodelAdjust", "1", CVAR_ARCHIVE },
 
 	{ &cg_scaleVehicleSensitivity, "cg_scaleVehicleSensitivity", "1", CVAR_ARCHIVE },
+
+	// custom vmcvar
+	{ &cg_humerusRBone_angle_0, "cg_humerusRBone_angle_0", "0", CVAR_ARCHIVE },
+	{ &cg_humerusRBone_angle_1, "cg_humerusRBone_angle_1", "0", CVAR_ARCHIVE },
+	{ &cg_humerusRBone_angle_2, "cg_humerusRBone_angle_2", "0", CVAR_ARCHIVE },
+
+	{ &cg_radiusRBone_angle_0, "cg_radiusRBone_angle_0", "0", CVAR_ARCHIVE },
+	{ &cg_radiusRBone_angle_1, "cg_radiusRBone_angle_1", "0", CVAR_ARCHIVE },
+	{ &cg_radiusRBone_angle_2, "cg_radiusRBone_angle_2", "0", CVAR_ARCHIVE },
+
 };
+
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
 

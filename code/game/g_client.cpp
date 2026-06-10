@@ -1361,6 +1361,9 @@ qboolean G_SetG2PlayerModelInfo( gentity_t *ent, const char *modelName, const ch
 		ent->footRBone = BONE_INDEX_INVALID;
 		ent->humerusRBone = gi.G2API_GetBoneIndex( &ent->ghoul2[ent->playerModel], "rhumerus", qtrue );
 
+		// custom bones
+		ent->radiusRBone = gi.G2API_GetBoneIndex( &ent->ghoul2[ent->playerModel], "rradius", qtrue );
+
 		// now add overrides on specific joints so the client can set angle overrides on the legs, torso and head
 		if ( ent->client->NPC_class == CLASS_VEHICLE )
 		{//do vehicles tags

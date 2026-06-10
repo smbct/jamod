@@ -655,6 +655,15 @@ extern	vmCvar_t		cg_fovViewmodelAdjust;
 
 extern	vmCvar_t		cg_scaleVehicleSensitivity;
 
+// custom cvar for skeleton
+extern	vmCvar_t		cg_humerusRBone_angle_0;
+extern	vmCvar_t		cg_humerusRBone_angle_1;
+extern	vmCvar_t		cg_humerusRBone_angle_2;
+
+extern	vmCvar_t		cg_radiusRBone_angle_0;
+extern	vmCvar_t		cg_radiusRBone_angle_1;
+extern	vmCvar_t		cg_radiusRBone_angle_2;
+
 void CG_NewClientinfo( int clientNum );
 //
 // cg_main.c

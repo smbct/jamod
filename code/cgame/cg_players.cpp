@@ -7941,6 +7941,50 @@ extern void WP_SaberUpdateOldBladeData( gentity_t *ent );
 				}
 			}
 		}
+
+		std::cout  << std::endl << std::endl;
+		std::cout<< "test entity bone angles " << std::endl;
+		std::cout  << std::endl << std::endl;
+		
+		// extern void BG_G2SetBoneAngles( centity_t *cent, gentity_t *gent, int boneIndex, const vec3_t angles, const int flags, const Eorientations up, const Eorientations left, const Eorientations forward, qhandle_t *modelList );
+
+		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->upperLumbarBone, vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw );
+
+		// moving humerus
+		cg_humerusRBone_angle_0.value += 0.3;
+		if(cg_humerusRBone_angle_0.value > 360) {
+			cg_humerusRBone_angle_0.value -= 360;
+		}
+
+
+		// moving radius
+		// cg_radiusRBone_angle_0.value += 0.1;
+		// if(cg_radiusRBone_angle_0.value > 360) {
+		// 	cg_radiusRBone_angle_0.value -= 360;
+		// }
+		
+			// cg_humerusRBone_angle_0.value = 0.;
+			// cg_humerusRBone_angle_1.value = 0.;
+			// cg_humerusRBone_angle_2.value = 0.;
+
+		// cg_humerusRBone_angle_0 -> green axis
+		// cg_humerusRBone_angle_1 -> red axis
+		// cg_humerusRBone_angle_2 -> blue axis
+		
+		// red is aligned toward the arm bone
+
+		// try to compute angles for an orientation relative to the entity, and not relative to the connected bone
+		
+		// these angles are relative to the bone we are connected to
+
+		float angles_humerus[3] = {cg_humerusRBone_angle_0.value, cg_humerusRBone_angle_1.value, cg_humerusRBone_angle_2.value};
+
+		float angles_radius[3] = {cg_radiusRBone_angle_0.value, cg_radiusRBone_angle_1.value, cg_radiusRBone_angle_2.value};
+
+		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, angles_humerus, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
+
+		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, angles_radius, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
+
 	}
 	else
 	{
