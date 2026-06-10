@@ -1,6 +1,6 @@
 # setup
 
-Attempt ja modding
+Attempt ja modding. Original repo: <https://github.com/JACoders/OpenJK/>
 
 ```
 mkdir build && cd build
