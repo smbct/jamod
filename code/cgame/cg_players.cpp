@@ -7981,7 +7981,7 @@ extern void WP_SaberUpdateOldBladeData( gentity_t *ent );
 
 		float angles_radius[3] = {cg_radiusRBone_angle_0.value, cg_radiusRBone_angle_1.value, cg_radiusRBone_angle_2.value};
 
-		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, angles_humerus, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
+		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, angles_humerus, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
 
 		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, angles_radius, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
 

@@ -4334,18 +4334,32 @@ void copy_bone_matrix(mdxaBone_t& left, mdxaBone_t& right) {
 
 
 // prevent a clash between eigen and X11
-// #ifdef Success
-// #undef Success
-// #endif
+#ifdef Success
+#undef Success
+#endif
 
-// #include <eigen3/Eigen/Dense>
-// #include <eigen3/Eigen/Geometry>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Geometry>
 
 // void Inverse_Matrix(mdxaBone_t *src, mdxaBone_t *dest);
 
 static std::vector<float> custom_vert;
 static float testAngle = 0;
 void drawSkeletons() {
+
+	static float humerus_angle_0 = 0;
+	static float humerus_angle_1 = 0;
+	static float humerus_angle_2 = 0;
+
+	humerus_angle_2 += 0.4;
+	if(humerus_angle_2 > 360) {
+		humerus_angle_2 -= 360;
+	}
+
+	humerus_angle_0 += 0.4;
+	if(humerus_angle_0 > 360) {
+		humerus_angle_0 -= 360;
+	}
 
 	qglDepthRange( -1000, -1000 );
 
@@ -4370,6 +4384,10 @@ void drawSkeletons() {
 
 	int bbox_ind = 0;
 	for(int entity_ind = 0; entity_ind < backEnd.refdef.num_entities; entity_ind ++) {
+
+		if(entity_ind > 1) {
+			continue;
+		}
 
 		// if(backEnd.refdef.entities[i].e.reType != RT_MODEL) {
 		// 	continue;
@@ -4443,13 +4461,23 @@ void drawSkeletons() {
 			// try to access the skeleton limbs
 			vec3_t scale;
 			mdxaBone_t retMatrix, matrix;
-			
+
+			// create a local entity matrix
+			// vec3_t		axis[3]; and origin
+			mdxaBone_t local_entity_matrix;
+			for(int i = 0; i < 3; i ++) { // row
+				for(int j = 0; j < 3; j ++) { // col
+					local_entity_matrix.matrix[i][j] = backEnd.refdef.entities[entity_ind].e.axis[j][i];
+				}
+				local_entity_matrix.matrix[i][3] = backEnd.refdef.entities[entity_ind].e.origin[i];
+			}
+
 			if(ghoul2.IsValid() && ghoul2.size() > 0 && ghoul2[0].mBltlist.size() > 0)  {
 				
 				for(int model_ind = 0; model_ind < ghoul2.size(); model_ind ++) {
 
-					int	G2_Get_Bone_Index(CGhoul2Info *ghoul2, const char *boneName, qboolean bAddIfNotFound);
-
+					float humerus_angles[3] = {humerus_angle_0, humerus_angle_1, humerus_angle_2};
+					// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rhumerus", humerus_angles, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
 
 					// get coordinates of all bolts
 					std::vector<float[3]> bolt_pos(ghoul2[model_ind].mBltlist.size());
@@ -4462,8 +4490,11 @@ void drawSkeletons() {
 						std::cout << std::endl << std::endl << std::endl;
 						std::cout << "called! size= " << ghoul2.size() << std::endl;
 
-						G2_GenerateWorldMatrix(backEnd.refdef.entities[entity_ind].e.angles, backEnd.refdef.entities[entity_ind].e.origin);
-						Multiply_3x4Matrix(&matrix, &worldMatrix, &retMatrix);
+						
+						// G2_GenerateWorldMatrix(backEnd.refdef.entities[entity_ind].e.angles, backEnd.refdef.entities[entity_ind].e.origin);
+						Multiply_3x4Matrix(&matrix, &local_entity_matrix, &retMatrix);
+
+						// Com_Printf("Entity angles: %.3f %.3f %.3f\n", backEnd.refdef.entities[entity_ind].e.angles[0], backEnd.refdef.entities[entity_ind].e.angles[1], backEnd.refdef.entities[entity_ind].e.angles[2]);
 
 						p1[0] = matrix.matrix[0][3];
 						p1[1] = matrix.matrix[1][3];
@@ -4520,7 +4551,9 @@ void drawSkeletons() {
 
 							mdxaBone_t test_bolt, ret_matrix;
 							Multiply_3x4Matrix(&test_bolt, (mdxaBone_t *)&ghoul2[model_ind].mBoneCache->Eval(bone_ind), &skel->BasePoseMat); // DEST FIRST ARG
-							Multiply_3x4Matrix(&ret_matrix, &worldMatrix, &test_bolt);
+							Multiply_3x4Matrix(&ret_matrix, &local_entity_matrix, &test_bolt);
+
+							copy_bone_matrix(bones_matrix[bone_ind], ret_matrix); // store the matrix to be used later
 
 							// -> do not transform by current animation
 							// Multiply_3x4Matrix(&ret_matrix, &worldMatrix, &skel->BasePoseMat);
@@ -4530,7 +4563,6 @@ void drawSkeletons() {
 							bones_pos[bone_ind][2] = ret_matrix.matrix[2][3];
 							bone_name_ind[skel->name] = bone_ind;
 
-							copy_bone_matrix(bones_matrix[bone_ind], ret_matrix); // store the matrix to be used later
 						}
 
 						// draw bones matrix
@@ -4545,10 +4577,9 @@ void drawSkeletons() {
 
 							// compute bone position ?
 							mdxaBone_t test_bolt, ret_matrix;
-							// if(skel->name == std::string("rhumerus")) {
 							
 							Multiply_3x4Matrix(&test_bolt, (mdxaBone_t *)&ghoul2[model_ind].mBoneCache->Eval(bone_ind), &skel->BasePoseMat); // DEST FIRST ARG
-							Multiply_3x4Matrix(&ret_matrix, &worldMatrix, &test_bolt);
+							Multiply_3x4Matrix(&ret_matrix, &local_entity_matrix, &test_bolt);
 
 							if(std::find(keep_bones.begin(), keep_bones.end(), std::string(skel->name)) == keep_bones.end()) {
 								continue;	
@@ -4566,52 +4597,59 @@ void drawSkeletons() {
 								std::vector<float> custom_pos = {backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1]-30, backEnd.refdef.entities[entity_ind].e.origin[2]+50};
 								drawMatrix(custom_pos, ret_matrix);
 							}
+
+							// for the radius, try to cancel the parent (humerus) rotation
 							if(std::string(skel->name) == std::string("rradius")) {
-								std::vector<float> custom_pos = {backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1]-30, backEnd.refdef.entities[entity_ind].e.origin[2]+30};
+								std::vector<float> custom_pos;
 								
 								// try to multipy by the inverse of the humerus bone current matrix
 								// to cancel its transformation
 								
 								mdxaBone_t radius_copy;
-								copy_bone_matrix(radius_copy, ret_matrix);
-								for(int i = 0; i < 3; i ++) {
-									radius_copy.matrix[i][3] = 0;
-								}
+								copy_bone_matrix(radius_copy, bones_matrix[bone_name_ind["rradius"]]);
 
 								mdxaBone_t rhumerus_temp, ruhmerus_inv;
 								copy_bone_matrix(rhumerus_temp, bones_matrix[bone_name_ind["rhumerus"]]);
-								for(int i = 0; i < 3; i ++) {
-									rhumerus_temp.matrix[i][3] = 0;
-								}
-					
-								// void Inverse_Matrix(mdxaBone_t *src, mdxaBone_t *dest);
 
+								// void Inverse_Matrix(mdxaBone_t *src, mdxaBone_t *dest);
 								// src -> dest
 								Inverse_Matrix(&rhumerus_temp, &ruhmerus_inv);
+								for(int i = 0; i < 3; i ++) {
+									ruhmerus_inv.matrix[i][3] = 0;
+								}
 
+								// draw radius multiplied by humerus inverse
 								mdxaBone_t radius_out;
 								Multiply_3x4Matrix(&radius_out, &ruhmerus_inv, &radius_copy);
+
+								custom_pos = {backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1]-30, backEnd.refdef.entities[entity_ind].e.origin[2]+30};
 								drawMatrix(custom_pos, radius_out);
 
-								// attempt to compute euler angles
-								// Eigen::Matrix3f m;
+								// draw radius normal matrix
+								custom_pos = {backEnd.refdef.entities[entity_ind].e.origin[0], backEnd.refdef.entities[entity_ind].e.origin[1]+30, backEnd.refdef.entities[entity_ind].e.origin[2]+30};
+								drawMatrix(custom_pos, radius_copy);
+
+								// Compute euler angles with eigen
+								Eigen::Matrix3f m;
+								for(int i = 0; i < 3; i ++) {
+									for(int j = 0; j < 3; j ++) {
+										m(i,j) = ruhmerus_inv.matrix[i][j];
+									}
+								}
+
+								// Com_Printf("Inverse rhumerus matrix:\n");
 								// for(int i = 0; i < 3; i ++) {
-								// 	for(int j = 0; j < 3; j ++) {
-								// 		m(i,j) = ruhmerus_inv.matrix[i][j];
-								// 	}
+								// 	Com_Printf("%.3f %.3f %.3f\n", ruhmerus_inv.matrix[i][0], ruhmerus_inv.matrix[i][1], ruhmerus_inv.matrix[i][2]);
 								// }
-								// Eigen::Matrix<float,3,1> res = m.eulerAngles(2,1,0); // 012 ; 021 ; 201 ; 210 ; 102 ; 120  
+								// Com_Printf("\n");
 
-								// Eigen::Matrix<float,3,1> res = m.canonicalEulerAngles(2,1,0); // 012 ; 021 ; 201 ; 210 ; 102 ; 120  
+								Eigen::Matrix<float,3,1> res = m.eulerAngles(2,1,0);
+								// Eigen::Matrix<float,3,1> res = m.canonicalEulerAngles(2,1,0);
 
-								// std::cout << std::endl << std::endl;
-								// std::cout << "Angles extracted: " << res(0) << " " << res(1) << " " << res(2) << std::endl;
-								// std::cout << std::endl << std::endl;
-								// vec3_t test_angles = {res(0)*360./3.1415, res(0)*360./3.1415, res(0)*360./3.1415};
-								// vec3_t test_angles = {0, 0, 0};
-								// test_angles[ROLL] = res(0)*180./3.1415;
-								// test_angles[PITCH] = res(1)*180./3.1415;
-								// test_angles[YAW] = res(2)*180./3.1415;
+								float test_angles[3];
+								test_angles[ROLL] = res(0)*180./3.1415;
+								test_angles[PITCH] = res(1)*180./3.1415;
+								test_angles[YAW] = res(2)*180./3.1415;
 
 								// / angle indexes
 								// #define	PITCH	0		// up / down
@@ -4619,23 +4657,15 @@ void drawSkeletons() {
 								// #define	ROLL	2		// fall over
 
 								// debug from https://stackoverflow.com/questions/11514063/extract-yaw-pitch-and-roll-from-a-rotationmatrix
-								// yaw=atan2(R(2,1),R(1,1));
-								// pitch=atan2(-R(3,1),sqrt(R(3,2)^2+R(3,3)^2)));
-								// roll=atan2(R(3,2),R(3,3));
-								
-								// test_angles[YAW] = atan2(rhumerus_temp.matrix[1][0],rhumerus_temp.matrix[0][0]);
-								// test_angles[PITCH] = atan2(-rhumerus_temp.matrix[2][0], sqrt( rhumerus_temp.matrix[2][1]*rhumerus_temp.matrix[2][1] + rhumerus_temp.matrix[2][2]*rhumerus_temp.matrix[2][2] ));
-								// test_angles[ROLL] = atan2( rhumerus_temp.matrix[2][1], rhumerus_temp.matrix[2][2]);
 
-								// test_angles[YAW] = test_angles[YAW]*180./3.1415;
-								// test_angles[PITCH] = test_angles[PITCH]*180./3.1415;
-								// test_angles[ROLL] = test_angles[ROLL]*180./3.1415;
+								// G2_Set_Bone_Angles(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName, const float *angles, const int flags, const Eorientations up, const Eorientations left, const Eorientations forward, const int blendTime, const int currentTime);
 
-								// // G2_Set_Bone_Angles(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName, const float *angles, const int flags, const Eorientations up, const Eorientations left, const Eorientations forward, const int blendTime, const int currentTime);
-								// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", test_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
+								// in this call with PREMULT, angles are relatives to the parent bone
+								G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", test_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
 
-								// vec3_t debug_angles = {90, 0, 0};
-								// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", debug_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
+								// in this call with REPLACE, angles are relatives to the entitiy matrix
+								// vec3_t debug_angles = {90, 0, 45};
+								// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", debug_angles, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
 
 							}
 
