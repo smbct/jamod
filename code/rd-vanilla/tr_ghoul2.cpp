@@ -4661,7 +4661,7 @@ void drawSkeletons() {
 								// G2_Set_Bone_Angles(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName, const float *angles, const int flags, const Eorientations up, const Eorientations left, const Eorientations forward, const int blendTime, const int currentTime);
 
 								// in this call with PREMULT, angles are relatives to the parent bone
-								G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", test_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
+								// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rradius", test_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0, 0);
 
 								// in this call with REPLACE, angles are relatives to the entitiy matrix
 								// vec3_t debug_angles = {90, 0, 45};

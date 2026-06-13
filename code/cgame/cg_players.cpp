@@ -37,6 +37,10 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "animtable.h"
 
+// kinect mod
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Geometry>
+
 extern qboolean WP_SaberBladeUseSecondBladeStyle( saberInfo_t *saber, int bladeNum );
 extern void WP_SaberSwingSound( gentity_t *ent, int saberNum, swingType_t swingType );
 
@@ -2212,7 +2216,62 @@ static void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const ve
 			Com_Printf("\n");
 		}
 
-		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angle, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw);
+		float norm = 0.;
+		for(int i = 0; i < 3; i ++) {
+			norm += cent->gent->client->ps.rshoulder_orientation[i]*cent->gent->client->ps.rshoulder_orientation[i];
+		}
+		Com_Printf("Test norm rotation matrix: %.3f\n", norm);
+
+		// Compute euler angles with eigen
+		Eigen::Matrix3f m;
+		m(0,0) = cent->gent->client->ps.rshoulder_orientation[0];
+		m(0,1) = cent->gent->client->ps.rshoulder_orientation[1];
+		m(0,2) = cent->gent->client->ps.rshoulder_orientation[2];
+
+		m(2,0) = cent->gent->client->ps.rshoulder_orientation[3];
+		m(2,1) = cent->gent->client->ps.rshoulder_orientation[4];
+		m(2,2) = cent->gent->client->ps.rshoulder_orientation[5];
+
+		m(1,0) = cent->gent->client->ps.rshoulder_orientation[6];
+		m(1,1) = cent->gent->client->ps.rshoulder_orientation[7];
+		m(1,2) = cent->gent->client->ps.rshoulder_orientation[8];
+
+		Eigen::Matrix<float,3,1> res = m.eulerAngles(2,1,0);
+		// Eigen::Matrix<float,3,1> res = m.canonicalEulerAngles(2,1,0);
+
+		static float humerus_roll = 0;
+		humerus_roll += 0.8;
+		if(humerus_roll > 360) {
+			humerus_roll -= 360;
+		}
+
+		float humerus_angles[3] = {humerus_roll, 0, 30};
+		// humerus_angles[ROLL] = res(0)*180./3.1415;
+		// humerus_angles[PITCH] = res(1)*180./3.1415;
+		// humerus_angles[YAW] = res(2)*180./3.1415;
+
+		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angles, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0);
+
+		float radius_angles[3] = {0, 90, 180};
+		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, radius_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0);
+
+		// radius
+		// for(int i = 0; i < 3; i ++) {
+		// 	for(int j = 0; j < 3; j ++) {
+		// 		m(i,j) = cent->gent->client->ps.relbow_orientation[j*3+i];
+		// 	}
+		// }
+
+		// res = m.eulerAngles(2,1,0);
+		// // Eigen::Matrix<float,3,1> res = m.canonicalEulerAngles(2,1,0);
+
+		// float radius_angles[3];
+		// radius_angles[ROLL] = res(0)*180./3.1415;
+		// radius_angles[PITCH] = res(1)*180./3.1415;
+		// radius_angles[YAW] = res(2)*180./3.1415;
+		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, radius_angles, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, NEGATIVE_Z, cgs.model_draw);
+
+
 
 	}
 
@@ -7999,7 +8058,7 @@ extern void WP_SaberUpdateOldBladeData( gentity_t *ent );
 
 		float angles_radius[3] = {cg_radiusRBone_angle_0.value, cg_radiusRBone_angle_1.value, cg_radiusRBone_angle_2.value};
 
-		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, angles_humerus, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
+		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, angles_humerus, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
 
 		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, angles_radius, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
 
