@@ -7942,9 +7942,9 @@ extern void WP_SaberUpdateOldBladeData( gentity_t *ent );
 			}
 		}
 
-		std::cout  << std::endl << std::endl;
-		std::cout<< "test entity bone angles " << std::endl;
-		std::cout  << std::endl << std::endl;
+		// std::cout  << std::endl << std::endl;
+		// std::cout<< "test entity bone angles " << std::endl;
+		// std::cout  << std::endl << std::endl;
 		
 		// extern void BG_G2SetBoneAngles( centity_t *cent, gentity_t *gent, int boneIndex, const vec3_t angles, const int flags, const Eorientations up, const Eorientations left, const Eorientations forward, qhandle_t *modelList );
 

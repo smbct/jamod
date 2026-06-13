@@ -4375,11 +4375,11 @@ void drawSkeletons() {
 	custom_vert.resize(24*model_entity_size, 0.);	
 	
 	static int i2 = 0;
-	cout << endl << endl;
-	cout << "*****************************************" << endl;
-	cout << "debug drawing surfaces !! " << i2 << endl;
-	cout << "*****************************************" << endl;
-	cout << endl << endl;
+	// cout << endl << endl;
+	// cout << "*****************************************" << endl;
+	// cout << "debug drawing surfaces !! " << i2 << endl;
+	// cout << "*****************************************" << endl;
+	// cout << endl << endl;
 	i2 += 1;
 
 	int bbox_ind = 0;
@@ -4393,9 +4393,9 @@ void drawSkeletons() {
 		// 	continue;
 		// }
 
-		cout << "origin: " << backEnd.refdef.entities[entity_ind].e.origin[0] << " ,";
-		cout <<  backEnd.refdef.entities[entity_ind].e.origin[1] << ", ";
-		cout << backEnd.refdef.entities[entity_ind].e.origin[2] << endl;
+		// cout << "origin: " << backEnd.refdef.entities[entity_ind].e.origin[0] << " ,";
+		// cout <<  backEnd.refdef.entities[entity_ind].e.origin[1] << ", ";
+		// cout << backEnd.refdef.entities[entity_ind].e.origin[2] << endl;
 		float p1[3], p2[3], p3[3], p4[3];
 
 		// for(int j = 0; j < 3; j ++) {
@@ -4421,7 +4421,7 @@ void drawSkeletons() {
 
 		}
 
-		std::cout << "entity origin: " << p1[0] << " " << p1[1] << " " << p1[2] << std::endl;
+		// std::cout << "entity origin: " << p1[0] << " " << p1[1] << " " << p1[2] << std::endl;
 
 
 		// skeleton ?
@@ -4483,12 +4483,12 @@ void drawSkeletons() {
 					std::vector<float[3]> bolt_pos(ghoul2[model_ind].mBltlist.size());
 					for(int bolt_ind = 0; bolt_ind < ghoul2[model_ind].mBltlist.size(); bolt_ind ++) {
 
-						std::cout << "bolt index: " << bolt_ind << ", associated bone ind: " << ghoul2[model_ind].mBltlist[bolt_ind].boneNumber << std::endl; 
+						// std::cout << "bolt index: " << bolt_ind << ", associated bone ind: " << ghoul2[model_ind].mBltlist[bolt_ind].boneNumber << std::endl; 
 
 						// model_ind, bolt_ind
 						G2_GetBoltMatrixLow(ghoul2[model_ind], bolt_ind, scale, retMatrix);
-						std::cout << std::endl << std::endl << std::endl;
-						std::cout << "called! size= " << ghoul2.size() << std::endl;
+						// std::cout << std::endl << std::endl << std::endl;
+						// std::cout << "called! size= " << ghoul2.size() << std::endl;
 
 						
 						// G2_GenerateWorldMatrix(backEnd.refdef.entities[entity_ind].e.angles, backEnd.refdef.entities[entity_ind].e.origin);
@@ -4537,7 +4537,7 @@ void drawSkeletons() {
 						drawMatrix(custom_pos, identityMatrix);
 						//------------------
 
-						std::cout << "n bones alt: " << ghoul2[model_ind].mBoneCache->mNumBones << std::endl;
+						// std::cout << "n bones alt: " << ghoul2[model_ind].mBoneCache->mNumBones << std::endl;
 						bones_pos.resize(ghoul2[model_ind].mBoneCache->mNumBones, std::vector<float>(3, 0));
 						bones_matrix.resize(bones_pos.size());
 
@@ -4547,7 +4547,7 @@ void drawSkeletons() {
 							mdxaSkelOffsets_t	*offsets;
    							offsets = (mdxaSkelOffsets_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t));
 							skel = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[bone_ind]);
-							std::cout << skel->name << std::endl;
+							// std::cout << skel->name << std::endl;
 
 							mdxaBone_t test_bolt, ret_matrix;
 							Multiply_3x4Matrix(&test_bolt, (mdxaBone_t *)&ghoul2[model_ind].mBoneCache->Eval(bone_ind), &skel->BasePoseMat); // DEST FIRST ARG
@@ -4571,7 +4571,7 @@ void drawSkeletons() {
 							mdxaSkelOffsets_t	*offsets;
    							offsets = (mdxaSkelOffsets_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t));
 							skel = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[bone_ind]);
-							std::cout << skel->name << std::endl;
+							// std::cout << skel->name << std::endl;
 
 							bone_name_ind[skel->name] = bone_ind;
 
@@ -4701,7 +4701,7 @@ void drawSkeletons() {
 					
 					}
 
-					std::cout << "nb bones for this model: " << ghoul2[model_ind].mBlist.size() << std::endl;
+					// std::cout << "nb bones for this model: " << ghoul2[model_ind].mBlist.size() << std::endl;
 					for(int bone_ind = 0; bone_ind < ghoul2[model_ind].mBlist.size(); bone_ind ++) {
 					
 						// void G2_GetBoneMatrixLow(CGhoul2Info &ghoul2,int boneNum,const vec3_t scale,mdxaBone_t &retMatrix,mdxaBone_t *&retBasepose,mdxaBone_t *&retBaseposeInv);
@@ -4718,38 +4718,38 @@ void drawSkeletons() {
 						// mdxaBone_t basePosParent = *ghoul2[model_ind].mBlist[bone_ind].baseposeParent;
 
 
-						std::cout << endl << endl;
-						std::cout << "Current bone number: " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
-						std::cout << "matrix: " << std::endl;
-						for(int i = 0; i < 3; i ++) {
-							for(int j = 0; j < 4; j ++) {
-								std::cout << ghoul2[model_ind].mBlist[bone_ind].matrix.matrix[i][j]  <<" "; 
-							}
-							std::cout << endl;
-						}
-						std::cout << std::endl;
-						for(int i = 0; i < 3; i ++) {
-							for(int j = 0; j < 4; j ++) {
-								std::cout << ghoul2[model_ind].mBlist[bone_ind].newMatrix.matrix[i][j]  <<" "; 
-							}
-							std::cout << endl;
-						}
-						std::cout << "original origin: " << std::endl;
-						std::cout << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[0] << ", " << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[1] <<  " " << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[2] << std::endl;
+						// std::cout << endl << endl;
+						// std::cout << "Current bone number: " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
+						// std::cout << "matrix: " << std::endl;
+						// for(int i = 0; i < 3; i ++) {
+						// 	for(int j = 0; j < 4; j ++) {
+						// 		std::cout << ghoul2[model_ind].mBlist[bone_ind].matrix.matrix[i][j]  <<" "; 
+						// 	}
+						// 	std::cout << endl;
+						// }
+						// std::cout << std::endl;
+						// for(int i = 0; i < 3; i ++) {
+						// 	for(int j = 0; j < 4; j ++) {
+						// 		std::cout << ghoul2[model_ind].mBlist[bone_ind].newMatrix.matrix[i][j]  <<" "; 
+						// 	}
+						// 	std::cout << endl;
+						// }
+						// std::cout << "original origin: " << std::endl;
+						// std::cout << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[0] << ", " << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[1] <<  " " << ghoul2[model_ind].mBlist[bone_ind].originalOrigin[2] << std::endl;
 
-						std::cout << "last position: " << std::endl;
-						std::cout << ghoul2[model_ind].mBlist[bone_ind].lastPosition[0] << ", " << ghoul2[model_ind].mBlist[bone_ind].lastPosition[1] <<  " " << ghoul2[model_ind].mBlist[bone_ind].lastPosition[2] << std::endl;
+						// std::cout << "last position: " << std::endl;
+						// std::cout << ghoul2[model_ind].mBlist[bone_ind].lastPosition[0] << ", " << ghoul2[model_ind].mBlist[bone_ind].lastPosition[1] <<  " " << ghoul2[model_ind].mBlist[bone_ind].lastPosition[2] << std::endl;
 
 
 						int bolt_ind = G2_Find_Bolt_Bone_Num(ghoul2[model_ind].mBltlist, ghoul2[model_ind].mBlist[bone_ind].boneNumber);
-						std::cout << "Bolt ind for this bone: " << bolt_ind << std::endl;
-						std::cout << "verif bone ind from bolt ind: " << ghoul2[model_ind].mBltlist[bolt_ind].boneNumber << std::endl;
+						// std::cout << "Bolt ind for this bone: " << bolt_ind << std::endl;
+						// std::cout << "verif bone ind from bolt ind: " << ghoul2[model_ind].mBltlist[bolt_ind].boneNumber << std::endl;
 
 
-						std::cout << "Bone index compare: " << bone_ind << ", " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
+						// std::cout << "Bone index compare: " << bone_ind << ", " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
 
-						std::cout << "Parent Bone index compare: " << ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex;
-						std::cout << ", " << ghoul2[model_ind].mBlist[ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex].boneNumber << std::endl;
+						// std::cout << "Parent Bone index compare: " << ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex;
+						// std::cout << ", " << ghoul2[model_ind].mBlist[ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex].boneNumber << std::endl;
 
 						float test2[3];
 						test2[0] = bolt_pos[bolt_ind][0]+10;
@@ -4773,15 +4773,15 @@ void drawSkeletons() {
 						mdxaSkelOffsets_t	*offsets;
    						offsets = (mdxaSkelOffsets_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t));
 						skel = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[ghoul2[model_ind].mBlist[bone_ind].boneNumber]);
-						std::cout << "skel name: " << skel->name << std::endl;
-						std::cout << "num children: " << skel->numChildren << std::endl;
-						std::cout << std::endl << std::endl;
+						// std::cout << "skel name: " << skel->name << std::endl;
+						// std::cout << "num children: " << skel->numChildren << std::endl;
+						// std::cout << std::endl << std::endl;
 						for(int i = 0; i < skel->numChildren; i ++) {
 
 							mdxaSkel_t* skelbis = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[skel->children[i]]);
 							
-							std::cout << "children " << i << " -> " << skel->children[i] << " "; 
-							std::cout << skelbis->name << std::endl;
+							// std::cout << "children " << i << " -> " << skel->children[i] << " "; 
+							// std::cout << skelbis->name << std::endl;
 
 							mdxaBone_t test_bolt, ret_matrix;
 							Multiply_3x4Matrix(&test_bolt, (mdxaBone_t *)&ghoul2[model_ind].mBoneCache->Eval(skel->children[i]), &skelbis->BasePoseMat); // DEST FIRST ARG
@@ -4804,13 +4804,13 @@ void drawSkeletons() {
 							// }
 							// std::cout << std::endl;
 							
-							for(int j = 0; j < 3; j ++) {
-								for(int k = 0; k < 4; k ++) {
-									std::cout << ghoul2[model_ind].mBoneCache->mFinalBones[skel->children[i]].boneMatrix.matrix[j][k] << " ";
-								}
-								std::cout << std::endl;
-							}
-							std::cout << std::endl;
+							// for(int j = 0; j < 3; j ++) {
+							// 	for(int k = 0; k < 4; k ++) {
+							// 		std::cout << ghoul2[model_ind].mBoneCache->mFinalBones[skel->children[i]].boneMatrix.matrix[j][k] << " ";
+							// 	}
+							// 	std::cout << std::endl;
+							// }
+							// std::cout << std::endl;
 
 							int bolt_ind = G2_Find_Bolt_Bone_Num(ghoul2[model_ind].mBltlist, skel->children[i]);
 
@@ -4830,17 +4830,17 @@ void drawSkeletons() {
 
 						}
 						int bone_number_from_skel = G2_Find_Bone(&ghoul2[model_ind], ghoul2[model_ind].mBlist, skel->name);
-						std::cout << "bone index from skeleton name: " << bone_number_from_skel << " vs " << bone_ind << " and " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
+						// std::cout << "bone index from skeleton name: " << bone_number_from_skel << " vs " << bone_ind << " and " << ghoul2[model_ind].mBlist[bone_ind].boneNumber << std::endl;
 
 						// int parent_bone_ind = G2_Find_Bone_In_List(ghoul2[model_ind].mBlist, ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex);
 						// std::cout << "parent bone index alternative: " << parent_bone_ind << std::endl;
 
 						mdxaSkel_t	*skel_parent = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[skel->parent]);
-						std::cout << "parent bone name: " << skel_parent->name << std::endl;
+						// std::cout << "parent bone name: " << skel_parent->name << std::endl;
 
-						std::cout << "attempt get list of bones" << std::endl;
-						std::cout << ghoul2[model_ind].mBoneCache->header->numBones << std::endl;
-						std::cout << std::endl;
+						// std::cout << "attempt get list of bones" << std::endl;
+						// std::cout << ghoul2[model_ind].mBoneCache->header->numBones << std::endl;
+						// std::cout << std::endl;
 
 						// if(ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex >= 0) {
 						// 	int parent_bolt_ind = G2_Find_Bolt_Bone_Num(ghoul2[model_ind].mBltlist, ghoul2[model_ind].mBlist[bone_ind].parentBoneIndex);

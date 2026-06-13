@@ -32,6 +32,9 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "sys_public.h"
 #include "con_local.h"
 
+// kinect mod
+#include "../kinect/kinect.h"
+
 static char binaryPath[ MAX_OSPATH ] = { 0 };
 static char installPath[ MAX_OSPATH ] = { 0 };
 
@@ -176,6 +179,8 @@ static void NORETURN Sys_Exit( int ex ) {
 #endif
 
 	NET_Shutdown();
+
+	kinect_clean();
 
 	Sys_PlatformExit();
 
@@ -787,6 +792,9 @@ int main ( int argc, char* argv[] )
 	Com_Printf( "SDL Version Compiled: %d.%d.%d\n", compiled.major, compiled.minor, compiled.patch );
 	Com_Printf( "SDL Version Linked: %d.%d.%d\n", linked.major, linked.minor, linked.patch );
 #endif
+
+	// kinect mod
+	kinect_init();
 
 	// main game loop
 	while (1)

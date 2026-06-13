@@ -35,6 +35,9 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #endif
 
+// kinect mod
+#include "kinect/kinect.h"
+
 // Because renderer.
 #include "../rd-common/tr_public.h"
 extern refexport_t re;
@@ -1430,6 +1433,10 @@ void Com_Frame( void ) {
 				Sys_Sleep(timeVal - 1);
 		} while( (timeVal = Com_TimeVal(minMsec)) != 0 );
 		IN_Frame();
+
+		// Kinect mod
+		kinect_update();
+
 
 		lastTime = com_frameTime;
 		com_frameTime = Com_EventLoop();

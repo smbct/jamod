@@ -2209,11 +2209,11 @@ void drawEntitiesBBox() {
 	custom_vert.resize(24*model_entity_size, 0.);	
 	
 	static int i2 = 0;
-	cout << endl << endl;
-	cout << "*****************************************" << endl;
-	cout << "debug drawing surfaces !! " << i2 << endl;
-	cout << "*****************************************" << endl;
-	cout << endl << endl;
+	// cout << endl << endl;
+	// cout << "*****************************************" << endl;
+	// cout << "debug drawing surfaces !! " << i2 << endl;
+	// cout << "*****************************************" << endl;
+	// cout << endl << endl;
 	i2 += 1;
 
 		qglDepthRange( 0, 1 );
@@ -2231,10 +2231,10 @@ void drawEntitiesBBox() {
 		vec3_t bounds1; vec3_t bounds2;
 
 		R_ModelBounds(hModel, bounds1, bounds2);
-		cout << "entity " << entity_ind << endl;
-		cout << "bounds1: " << bounds1[0] << " ; " << bounds1[1] << " ; " << bounds1[2] << endl;
-		cout << "bounds2: " << bounds2[0] << " ; " << bounds2[1] << " ; " << bounds2[2] << endl;
-		cout << endl;
+		// cout << "entity " << entity_ind << endl;
+		// cout << "bounds1: " << bounds1[0] << " ; " << bounds1[1] << " ; " << bounds1[2] << endl;
+		// cout << "bounds2: " << bounds2[0] << " ; " << bounds2[1] << " ; " << bounds2[2] << endl;
+		// cout << endl;
 		
 		
 		int start_ind = bbox_ind*24;
@@ -2323,8 +2323,8 @@ void drawEntitiesBBox() {
 		// qglRotatef(angle_x, 1., 0., 0.);
 
 
-		cout << flush;
-		cout << "z angle: " << angle_z << endl;
+		// cout << flush;
+		// cout << "z angle: " << angle_z << endl;
 		
 		// ofstream file("test_file.txt");
 		// file << testAngle << endl;
@@ -2366,9 +2366,9 @@ void drawEntitiesBBox() {
 		qglPopMatrix();
 
 
-		cout << "origin: " << backEnd.refdef.entities[entity_ind].e.origin[0] << " ,";
-		cout <<  backEnd.refdef.entities[entity_ind].e.origin[1] << ", ";
-		cout << backEnd.refdef.entities[entity_ind].e.origin[2] << endl;
+		// cout << "origin: " << backEnd.refdef.entities[entity_ind].e.origin[0] << " ,";
+		// cout <<  backEnd.refdef.entities[entity_ind].e.origin[1] << ", ";
+		// cout << backEnd.refdef.entities[entity_ind].e.origin[2] << endl;
 		float p1[3], p2[3], p3[3], p4[3];
 
 		// for(int j = 0; j < 3; j ++) {
