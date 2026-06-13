@@ -346,6 +346,8 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 		"${SharedDir}/sdl/sdl_input.cpp"
 		"${SharedDir}/sdl/sdl_window.cpp"
 		"${SharedDir}/sdl/sdl_icon.h"
+		"${SharedDir}/kinect/kinect.h" # Kinect mod
+		"${SharedDir}/kinect/kinect.cpp" # Kinect mod
 		)
 
 	if(WIN32)
@@ -365,6 +367,11 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 	source_group("sys" FILES ${SPEngineSysFiles})
 	set(SPEngineFiles ${SPEngineFiles} ${SPEngineSysFiles})
 
+	# kinect mod
+	list(APPEND SPEngineIncludeDirectories "/usr/include/ni")
+    list(APPEND SPEngineLibraries          -lOpenNI)
+	##
+
     # Transparently use our bundled minizip.
     list(APPEND SPEngineIncludeDirectories ${MINIZIP_INCLUDE_DIRS})
     list(APPEND SPEngineLibraries          ${MINIZIP_LIBRARIES})
@@ -372,6 +379,8 @@ if(BuildSPEngine OR BuildJK2SPEngine)
     # Transparently use either bundled or system zlib.
     list(APPEND SPEngineIncludeDirectories ${ZLIB_INCLUDE_DIR})
     list(APPEND SPEngineLibraries          ${ZLIB_LIBRARIES})
+
+	MESSAGE(STATUS "${SPEngineIncludeDirectories}")
 
 	# project macro so we can invoke it twice: for jk2 and for ja
 	function(add_sp_project ProjectName Label SPDirName InstallDir Component)
