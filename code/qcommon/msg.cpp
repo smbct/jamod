@@ -476,6 +476,12 @@ void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to ) {
 	MSG_WriteDelta( msg, from->buttons, to->buttons, 16 );//FIXME:  We're only really using 9 bits...can this be changed to that?
 	MSG_WriteDelta( msg, from->weapon, to->weapon, 8 );
 	MSG_WriteDelta( msg, from->generic_cmd, to->generic_cmd, 8 );
+
+	// kinect mod
+	for(unsigned int i = 0; i < 9; i ++) {
+		MSG_WriteDelta( msg, from->rshoulder_orientation[i], to->rshoulder_orientation[i], 32);
+		MSG_WriteDelta( msg, from->relbow_orientation[i], to->relbow_orientation[i], 32);
+	}
 }
 
 
@@ -495,6 +501,12 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to ) {
 	to->buttons = MSG_ReadDelta( msg, from->buttons, 16);//FIXME:  We're only really using 9 bits...can this be changed to that?
 	to->weapon = MSG_ReadDelta( msg, from->weapon, 8);
 	to->generic_cmd = MSG_ReadDelta( msg, from->generic_cmd, 8);
+
+	// kinect mod
+	for(unsigned int i = 0; i < 9; i ++) {
+		to->rshoulder_orientation[i] = MSG_ReadDelta( msg, from->rshoulder_orientation[i], 32);
+		to->relbow_orientation[i] = MSG_ReadDelta( msg, from->relbow_orientation[i], 32);
+	}
 }
 
 /*

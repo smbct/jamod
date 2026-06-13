@@ -2199,6 +2199,24 @@ static void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const ve
 		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->upperLumbarBone, ulAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw);
 		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->lowerLumbarBone, llAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw);
 	}
+
+
+	// kinect mod
+	if ( cent->gent->client->NPC_class == CLASS_PLAYER ) {
+
+		Com_Printf("right shoulder rotation matrix shoulder\n");
+		for(int i = 0; i < 3; i ++) {
+			for(int j = 0; j < 3; j ++) {
+				Com_Printf("%f ", cent->gent->client->ps.rshoulder_orientation[i*3+j]);
+			}
+			Com_Printf("\n");
+		}
+
+		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angle, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw);
+
+	}
+
+
 }
 
 static void CG_G2ClientNeckAngles( centity_t *cent, const vec3_t lookAngles, vec3_t headAngles, vec3_t neckAngles, vec3_t thoracicAngles, vec3_t headClampMinAngles, vec3_t headClampMaxAngles )

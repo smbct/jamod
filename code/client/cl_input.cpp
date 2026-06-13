@@ -32,6 +32,10 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #endif
 
+#ifdef KINECT_MOD_ACTIVATED
+#include "kinect/kinect.h"
+#endif
+
 unsigned	frame_msec;
 int			old_com_frameTime;
 float cl_mPitchOverride = 0.0f;
@@ -692,6 +696,20 @@ usercmd_t CL_CreateCmd( void ) {
 
 	// get basic movement from mouse
 	CL_MouseMove( &cmd );
+
+	// kinect mod
+	#ifdef KINECT_MOD_ACTIVATED
+	int id = kinect_ready();
+	if(id < 16) {
+		skeleton skeleton;
+		kinect_getSkeleton(id, skeleton);
+		for(unsigned int i = 0; i < 9; i ++) {
+			cmd.rshoulder_orientation[i] = skeleton[XN_SKEL_RIGHT_SHOULDER].orientation.orientation.elements[i];
+			cmd.relbow_orientation[i] = skeleton[XN_SKEL_RIGHT_ELBOW].orientation.orientation.elements[i];
+		}
+		Com_Printf("Passing kinect joint angles to ja!");
+	}
+	#endif
 
 	// get basic movement from joystick
 	CL_JoystickMove( &cmd );

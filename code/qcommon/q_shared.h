@@ -1623,6 +1623,11 @@ public:
 	float		legsYaw;		// actual legs forward facing
 	int			viewheight;
 
+	// kinect mod
+	float rshoulder_orientation[9];
+	float relbow_orientation[9]; // 3*3 matrices
+
+
 	// damage feedback
 	int			damageEvent;							// when it changes, latch the other parms
 	int			damageYaw;
@@ -2293,6 +2298,9 @@ typedef struct usercmd_s {
 	byte	generic_cmd;
 	signed char	forwardmove, rightmove, upmove;
 
+	// kinect mod
+	float rshoulder_orientation[9];
+	float relbow_orientation[9];
 
 	void sg_export(
 		ojk::SavedGameHelper& saved_game) const

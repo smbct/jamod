@@ -1382,6 +1382,18 @@ void PM_UpdateViewAngles( playerState_t *ps, usercmd_t *cmd, gentity_t *gent )
 		return;		// no view changes at all
 	}
 
+	// kinect mod
+	for(int i = 0; i < 9; i ++) { 	// rotation matrices
+		g_entities[0].client->ps.rshoulder_orientation[i] = cmd->rshoulder_orientation[i];
+		g_entities[0].client->ps.relbow_orientation[i] = cmd->relbow_orientation[i];
+	}
+	
+	// Com_Printf("Shoulder matrix: \n");
+	// Com_Printf("%.3f %.3f %.3f\n", g_entities[0].client->ps.rshoulder_orientation[0], g_entities[0].client->ps.rshoulder_orientation[1], g_entities[0].client->ps.rshoulder_orientation[2]);
+	// Com_Printf("%.3f %.3f %.3f\n", g_entities[0].client->ps.rshoulder_orientation[3], g_entities[0].client->ps.rshoulder_orientation[4], g_entities[0].client->ps.rshoulder_orientation[5]);
+	// Com_Printf("%.3f %.3f %.3f\n", g_entities[0].client->ps.rshoulder_orientation[6], g_entities[0].client->ps.rshoulder_orientation[7], g_entities[0].client->ps.rshoulder_orientation[8]);
+	// Com_Printf("\n");
+
 	//TEMP
 #if 0 //rww 12/23/02 - I'm disabling this for now, I'm going to try to make it work with my new rag stuff
 	if ( gent != NULL )

@@ -453,7 +453,6 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 
 		# Kinect mod
 		if(KinectMod)
-			# set_target_properties(${ProjectName} PROPERTIES "-DKINECT_MOD_ACTIVATED")
 			target_compile_definitions(${ProjectName} PRIVATE KINECT_MOD_ACTIVATED=1)
 		endif()
 
