@@ -1430,6 +1430,9 @@ typedef struct usercmd_s {
 	byte			invensel;
 	byte			generic_cmd;
 	signed char	forwardmove, rightmove, upmove;
+
+	// kinect mod
+	
 } usercmd_t;
 
 //===================================================================

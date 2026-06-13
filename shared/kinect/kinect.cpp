@@ -1,3 +1,5 @@
+#ifdef KINECT_MOD_ACTIVATED
+
 #include "kinect.h"
 
 #include <XnOpenNI.h>
@@ -347,4 +349,6 @@ void XN_CALLBACK_TYPE kinect_MyCalibrationInProgress(xn::SkeletonCapability& /*c
 void XN_CALLBACK_TYPE kinect_MyPoseInProgress(xn::PoseDetectionCapability& /*capability*/, const XnChar* /*strPose*/, XnUserID id, XnPoseDetectionStatus poseError, void* /*pCookie*/) {
 	m_Errors[id].second = poseError;
 }
+
+#endif // KINECT_MOD_ACTIVATED
 

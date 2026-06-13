@@ -180,7 +180,9 @@ static void NORETURN Sys_Exit( int ex ) {
 
 	NET_Shutdown();
 
-	kinect_clean();
+	#ifdef KINECT_MOD_ACTIVATED
+		kinect_clean();
+	#endif
 
 	Sys_PlatformExit();
 
@@ -794,7 +796,9 @@ int main ( int argc, char* argv[] )
 #endif
 
 	// kinect mod
-	kinect_init();
+	#ifdef KINECT_MOD_ACTIVATED
+		kinect_init();
+	#endif
 
 	// main game loop
 	while (1)

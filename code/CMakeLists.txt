@@ -346,9 +346,13 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 		"${SharedDir}/sdl/sdl_input.cpp"
 		"${SharedDir}/sdl/sdl_window.cpp"
 		"${SharedDir}/sdl/sdl_icon.h"
-		"${SharedDir}/kinect/kinect.h" # Kinect mod
-		"${SharedDir}/kinect/kinect.cpp" # Kinect mod
 		)
+
+	#### kinect mod
+	if(KinectMod)
+		set(SPEngineSysFiles "${SPEngineSysFiles}" "${SharedDir}/kinect/kinect.h" "${SharedDir}/kinect/kinect.cpp")
+	endif()
+	####
 
 	if(WIN32)
 		set(SPEngineSysFiles
@@ -367,10 +371,12 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 	source_group("sys" FILES ${SPEngineSysFiles})
 	set(SPEngineFiles ${SPEngineFiles} ${SPEngineSysFiles})
 
-	# kinect mod
-	list(APPEND SPEngineIncludeDirectories "/usr/include/ni")
-    list(APPEND SPEngineLibraries          -lOpenNI)
-	##
+	#### kinect mod
+	if(KinectMod)
+		list(APPEND SPEngineIncludeDirectories "/usr/include/ni")
+    	list(APPEND SPEngineLibraries          -lOpenNI)
+	endif()
+	####
 
     # Transparently use our bundled minizip.
     list(APPEND SPEngineIncludeDirectories ${MINIZIP_INCLUDE_DIRS})
@@ -379,8 +385,6 @@ if(BuildSPEngine OR BuildJK2SPEngine)
     # Transparently use either bundled or system zlib.
     list(APPEND SPEngineIncludeDirectories ${ZLIB_INCLUDE_DIR})
     list(APPEND SPEngineLibraries          ${ZLIB_LIBRARIES})
-
-	MESSAGE(STATUS "${SPEngineIncludeDirectories}")
 
 	# project macro so we can invoke it twice: for jk2 and for ja
 	function(add_sp_project ProjectName Label SPDirName InstallDir Component)
@@ -446,6 +450,12 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 
 		# Hide symbols not explicitly marked public.
 		set_property(TARGET ${ProjectName} APPEND PROPERTY COMPILE_OPTIONS ${OPENJK_VISIBILITY_FLAGS})
+
+		# Kinect mod
+		if(KinectMod)
+			# set_target_properties(${ProjectName} PROPERTIES "-DKINECT_MOD_ACTIVATED")
+			target_compile_definitions(${ProjectName} PRIVATE KINECT_MOD_ACTIVATED=1)
+		endif()
 
 		set_target_properties(${ProjectName} PROPERTIES INCLUDE_DIRECTORIES "${SPEngineIncludeDirectories}")
 		set_target_properties(${ProjectName} PROPERTIES PROJECT_LABEL ${Label})

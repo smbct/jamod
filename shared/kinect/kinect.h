@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef KINECT_MOD_ACTIVATED
+
 // dirty fix
 #define linux 1
 #define __x86_64__ 1
@@ -66,7 +68,8 @@ void XN_CALLBACK_TYPE kinect_MyCalibrationInProgress(xn::SkeletonCapability&, Xn
 //------------------------------------------------
 void XN_CALLBACK_TYPE kinect_MyPoseInProgress(xn::PoseDetectionCapability&, const XnChar*, XnUserID, XnPoseDetectionStatus, void*);
 
-        
+#endif // KINECT_MOD_ACTIVATED
+
 
 
         

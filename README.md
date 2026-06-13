@@ -2,11 +2,13 @@
 
 Attempt ja modding. Original repo: <https://github.com/JACoders/OpenJK/>
 
-```
+```bash
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=ja_parent_directory -DBuildMPEngine=OFF -DBuildMPDed=OFF 
 make -j5 && make install
 ```
+
+To activate the kinect mod, use cmake option `-DKinectMod=ON`.
 
 Running: 
 

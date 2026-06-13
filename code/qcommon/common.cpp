@@ -1435,8 +1435,9 @@ void Com_Frame( void ) {
 		IN_Frame();
 
 		// Kinect mod
-		kinect_update();
-
+		#ifdef KINECT_MOD_ACTIVATED
+			kinect_update();
+		#endif
 
 		lastTime = com_frameTime;
 		com_frameTime = Com_EventLoop();
