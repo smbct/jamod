@@ -1,0 +1,29 @@
+Bootstrap: docker
+From: ubuntu:24.04
+Stage: build
+
+%setup
+
+%files
+    # script from https://github.com/smbct/KinectOpenNISetup/
+    install_openni_kinect.sh
+
+%environment
+    export TZ=Europe/Paris
+
+%post
+
+    # set time zone (https://stackoverflow.com/questions/62299928/r-installation-in-docker-gets-stuck-in-geographic-area)
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+    apt update
+    apt install -y build-essential cmake libjpeg-dev libpng-dev zlib1g-dev libopengl-dev libgl-dev libsdl2-dev libeigen3-dev
+
+    bash install_openni_kinect.sh
+    
+%labels
+    Author smbct
+    Version v0.0.1
+
+%help
+    Environment for ja mod development.
