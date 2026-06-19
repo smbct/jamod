@@ -676,6 +676,11 @@ void CL_FinishMove( usercmd_t *cmd ) {
 CL_CreateCmd
 =================
 */
+
+// kinect mod
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Geometry>
+
 vec3_t cl_overriddenAngles = {0,0,0};
 qboolean cl_overrideAngles = qfalse;
 usercmd_t CL_CreateCmd( void ) {
@@ -703,11 +708,68 @@ usercmd_t CL_CreateCmd( void ) {
 	if(id < 16) {
 		skeleton skeleton;
 		kinect_getSkeleton(id, skeleton);
-		for(unsigned int i = 0; i < 9; i ++) {
-			cmd.rshoulder_orientation[i] = skeleton[XN_SKEL_RIGHT_SHOULDER].orientation.orientation.elements[i];
-			cmd.relbow_orientation[i] = skeleton[XN_SKEL_RIGHT_ELBOW].orientation.orientation.elements[i];
+
+		// multiply shoulder matrix by inverse torso matrix
+		Eigen::Matrix3f torso_mat;
+		torso_mat(0,0) = -skeleton[XN_SKEL_TORSO].orientation.orientation.elements[2];
+		torso_mat(1,0) = -skeleton[XN_SKEL_TORSO].orientation.orientation.elements[8];
+		torso_mat(2,0) = -skeleton[XN_SKEL_TORSO].orientation.orientation.elements[5];
+
+		torso_mat(0,1) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[0];
+		torso_mat(1,1) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[6];
+		torso_mat(2,1) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[3];
+
+		torso_mat(0,2) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[1];
+		torso_mat(1,2) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[7];
+		torso_mat(2,2) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[4];
+
+		Eigen::Matrix3f shoulder_mat; // XN_SKEL_LEFT_SHOULDER is actually the right one.. 
+		shoulder_mat(0,0) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[0];
+		shoulder_mat(1,0) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[6];
+		shoulder_mat(2,0) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[3];
+
+		shoulder_mat(0,1) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[1];
+		shoulder_mat(1,1) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[7];
+		shoulder_mat(2,1) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[4];
+
+		shoulder_mat(0,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[2];
+		shoulder_mat(1,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[8];
+		shoulder_mat(2,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[5];
+
+		// Eigen::Matrix3f shoulder_local = shoulder_mat;//*torso_mat.inverse().eval();
+
+		// Eigen::Matrix3f shoulder_local = torso_mat.inverse().eval()*shoulder_mat;
+		Eigen::Matrix3f shoulder_local = shoulder_mat;
+
+		// shoulder_local(0,0) = 1;
+		// shoulder_local(1,0) = 0;
+		// shoulder_local(2,0) = 0;
+		// shoulder_local(0,1) = 0;
+		// shoulder_local(1,1) = 1;
+		// shoulder_local(2,1) = 0;
+		// shoulder_local(0,2) = 0;
+		// shoulder_local(1,2) = 0;
+		// shoulder_local(2,2) = 1;
+
+
+		for(int i = 0; i < 3; i ++) {
+			for(int j = 0; j < 3; j ++) {
+				cmd.rshoulder_orientation[i*3+j] = shoulder_local(i,j);
+			}
 		}
-		Com_Printf("Passing kinect joint angles to ja!");
+
+		for(unsigned int i = 0; i < 9; i ++) {
+			// cmd.relbow_orientation[i] = skeleton[XN_SKEL_RIGHT_ELBOW].orientation.orientation.elements[i];
+						
+			cmd.relbow_orientation[i] = 0.;
+
+		}
+
+		// Com_Printf("Passing kinect joint angles to ja!\n");
+		// Com_Printf("%.3f %.3f %.3f\n", shoulder_local(0,0), shoulder_local(0,1), shoulder_local(0,2));
+		// Com_Printf("%.3f %.3f %.3f\n", shoulder_local(1,0), shoulder_local(1,1), shoulder_local(1,2));
+		// Com_Printf("%.3f %.3f %.3f\n", shoulder_local(2,0), shoulder_local(2,1), shoulder_local(2,2));
+		// Com_Printf("\n\n");
 	}
 	#endif
 

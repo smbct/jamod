@@ -2208,70 +2208,104 @@ static void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const ve
 	// kinect mod
 	if ( cent->gent->client->NPC_class == CLASS_PLAYER ) {
 
-		Com_Printf("right shoulder rotation matrix shoulder\n");
-		for(int i = 0; i < 3; i ++) {
-			for(int j = 0; j < 3; j ++) {
-				Com_Printf("%f ", cent->gent->client->ps.rshoulder_orientation[i*3+j]);
-			}
-			Com_Printf("\n");
-		}
+		// Com_Printf("right shoulder rotation matrix shoulder\n");
+		// for(int i = 0; i < 3; i ++) {
+		// 	for(int j = 0; j < 3; j ++) {
+		// 		Com_Printf("%f ", cent->gent->client->ps.rshoulder_orientation[i*3+j]);
+		// 	}
+		// 	Com_Printf("\n");
+		// }
 
-		float norm = 0.;
-		for(int i = 0; i < 3; i ++) {
-			norm += cent->gent->client->ps.rshoulder_orientation[i]*cent->gent->client->ps.rshoulder_orientation[i];
-		}
-		Com_Printf("Test norm rotation matrix: %.3f\n", norm);
+		// float norm = 0.;
+		// for(int i = 0; i < 3; i ++) {
+		// 	norm += cent->gent->client->ps.rshoulder_orientation[i]*cent->gent->client->ps.rshoulder_orientation[i];
+		// }
+		// Com_Printf("Test norm rotation matrix: %.3f\n", norm);
 
 		// Compute euler angles with eigen
 		Eigen::Matrix3f m;
+
 		m(0,0) = cent->gent->client->ps.rshoulder_orientation[0];
 		m(0,1) = cent->gent->client->ps.rshoulder_orientation[1];
 		m(0,2) = cent->gent->client->ps.rshoulder_orientation[2];
 
-		m(2,0) = cent->gent->client->ps.rshoulder_orientation[3];
-		m(2,1) = cent->gent->client->ps.rshoulder_orientation[4];
-		m(2,2) = cent->gent->client->ps.rshoulder_orientation[5];
+		m(1,0) = cent->gent->client->ps.rshoulder_orientation[3];
+		m(1,1) = cent->gent->client->ps.rshoulder_orientation[4];
+		m(1,2) = cent->gent->client->ps.rshoulder_orientation[5];
 
-		m(1,0) = cent->gent->client->ps.rshoulder_orientation[6];
-		m(1,1) = cent->gent->client->ps.rshoulder_orientation[7];
-		m(1,2) = cent->gent->client->ps.rshoulder_orientation[8];
+		m(2,0) = cent->gent->client->ps.rshoulder_orientation[6];
+		m(2,1) = cent->gent->client->ps.rshoulder_orientation[7];
+		m(2,2) = cent->gent->client->ps.rshoulder_orientation[8];
+
+		// m(0,0) = -0.174; m(0,1) = -0.597; m(0,2) = 0.151;
+		// m(1,0) = 0.224; m(1,1) = 0.085; m(1,2) = 0.593;
+		// m(2,0) = -0.574; m(2,1) = 0.214; m(2,2) = 0.186;
+
+		
+		// local matrix
+		// m(0,0) = 0.187; m(1,0) = 0.005; m(2,0) = -0.612;
+		// m(0,1) = -0.084; m(1,1) = 0.634; m(2,1) = -0.021;
+		// m(0,2) = -0.606; m(1,2) = -0.087; m(2,2) = -0.186;
+
+		// identity matrix
+		// m(0,0) = 1; m(1,0) = 0; m(2,0) = 0;
+		// m(0,1) = 0; m(1,1) = 1; m(2,1) = 0;
+		// m(0,2) = 0; m(1,2) = 0; m(2,2) = 1;
+
+		// m(0,0) = -0.174; m(1,0) = -0.597; m(2,0) = 0.151;
+		// m(0,1) = 0.224; m(1,1) = 0.085; m(2,1) = 0.593;
+		// m(0,2) = -0.574; m(1,2) = 0.214; m(2,2) = 0.186;
+
+
+		// Com_Printf("\n\n\n");
+		// Com_Printf("Received matrix in cg_players.cpp: \n");
+		// Com_Printf("%.3f %.3f %.3f\n", m(0,0), m(0,1), m(0,2));
+		// Com_Printf("%.3f %.3f %.3f\n", m(1,0), m(1,1), m(1,2));
+		// Com_Printf("%.3f %.3f %.3f\n", m(2,0), m(2,1), m(2,2));
+		// Com_Printf("\n\n");
+
+		// identity matrix is mapped to:
+		//  0  0 -1
+		//  0  1  0
+		// -1  0  0
+
+		// Eigen::Matrix3f temp;
+		// temp(0,0) = 0; temp(0,1) = 0; temp(0,2) = -1;
+		// temp(1,0) = 0; temp(1,1) = 1; temp(1,2) = 0;
+		// temp(2,0) = -1; temp(2,1) = 0; temp(2,2) = 0;
+
+		// m = m*temp;
 
 		Eigen::Matrix<float,3,1> res = m.eulerAngles(2,1,0);
 		// Eigen::Matrix<float,3,1> res = m.canonicalEulerAngles(2,1,0);
 
-		static float humerus_roll = 0;
-		humerus_roll += 0.8;
-		if(humerus_roll > 360) {
-			humerus_roll -= 360;
-		}
+		Com_Printf("Euler angles: \n");
+		Com_Printf("%.3f %.3f %.3f\n\n", res(0)*180./3.1415, res(1)*180./3.1415, res(2)*180./3.1415);
 
-		float humerus_angles[3] = {humerus_roll, 0, 30};
+		// static float humerus_roll = 0;
+		// humerus_roll += 0.8;
+		// if(humerus_roll > 360) {
+		// 	humerus_roll -= 360;
+		// }
+
+		// extern	vmCvar_t		cg_humerusRBone_angle_0;
+		// extern	vmCvar_t		cg_humerusRBone_angle_1;
+		// extern	vmCvar_t		cg_humerusRBone_angle_2;
+		// extern	vmCvar_t		cg_radiusRBone_angle_0;
+		// extern	vmCvar_t		cg_radiusRBone_angle_1;
+		// extern	vmCvar_t		cg_radiusRBone_angle_2;
+
+
+		// cg_humerusRBone_angle_0 60
+		// cg_humerusRBone_angle_1 -90
+		// cg_humerusRBone_angle_2 -120
+
+		float humerus_angles[3] = {cg_humerusRBone_angle_0.value, cg_humerusRBone_angle_1.value, cg_humerusRBone_angle_2.value};
 		// humerus_angles[ROLL] = res(0)*180./3.1415;
 		// humerus_angles[PITCH] = res(1)*180./3.1415;
 		// humerus_angles[YAW] = res(2)*180./3.1415;
 
-		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angles, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0);
-
-		float radius_angles[3] = {0, 90, 180};
-		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, radius_angles, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, 0);
-
-		// radius
-		// for(int i = 0; i < 3; i ++) {
-		// 	for(int j = 0; j < 3; j ++) {
-		// 		m(i,j) = cent->gent->client->ps.relbow_orientation[j*3+i];
-		// 	}
-		// }
-
-		// res = m.eulerAngles(2,1,0);
-		// // Eigen::Matrix<float,3,1> res = m.canonicalEulerAngles(2,1,0);
-
-		// float radius_angles[3];
-		// radius_angles[ROLL] = res(0)*180./3.1415;
-		// radius_angles[PITCH] = res(1)*180./3.1415;
-		// radius_angles[YAW] = res(2)*180./3.1415;
-		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, radius_angles, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, NEGATIVE_Z, cgs.model_draw);
-
-
+		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angles, BONE_ANGLES_REPLACE, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, 0);
 
 	}
 
@@ -8028,10 +8062,10 @@ extern void WP_SaberUpdateOldBladeData( gentity_t *ent );
 		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->upperLumbarBone, vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw );
 
 		// moving humerus
-		cg_humerusRBone_angle_0.value += 0.3;
-		if(cg_humerusRBone_angle_0.value > 360) {
-			cg_humerusRBone_angle_0.value -= 360;
-		}
+		// cg_humerusRBone_angle_0.value += 0.3;
+		// if(cg_humerusRBone_angle_0.value > 360) {
+		// 	cg_humerusRBone_angle_0.value -= 360;
+		// }
 
 
 		// moving radius
