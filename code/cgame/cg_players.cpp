@@ -2301,11 +2301,13 @@ static void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const ve
 		// cg_humerusRBone_angle_2 -120
 
 		float humerus_angles[3] = {cg_humerusRBone_angle_0.value, cg_humerusRBone_angle_1.value, cg_humerusRBone_angle_2.value};
-		// humerus_angles[ROLL] = res(0)*180./3.1415;
-		// humerus_angles[PITCH] = res(1)*180./3.1415;
-		// humerus_angles[YAW] = res(2)*180./3.1415;
+		humerus_angles[YAW] = res(0)*180./M_PI;
+		humerus_angles[PITCH] = res(1)*180./M_PI;
+		humerus_angles[ROLL] = -res(2)*180./M_PI;
 
-		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angles, BONE_ANGLES_REPLACE, POSITIVE_Z, NEGATIVE_Y, POSITIVE_X, 0);
+		float humerus_angles_res[3] = {humerus_angles[PITCH], humerus_angles[YAW], humerus_angles[ROLL]};
+
+		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angles_res, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0);
 
 	}
 

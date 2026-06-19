@@ -4572,7 +4572,7 @@ void drawSkeletons() {
 					float humerus_angles_bis[3] = {humerus_angles[PITCH], humerus_angles[YAW], humerus_angles[ROLL]};
 
 					// 5 3 4
-					G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rhumerus", humerus_angles_bis, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0, 0);
+					// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rhumerus", humerus_angles_bis, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0, 0);
 
 					
 

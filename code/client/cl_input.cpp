@@ -714,11 +714,9 @@ usercmd_t CL_CreateCmd( void ) {
 		torso_mat(0,0) = -skeleton[XN_SKEL_TORSO].orientation.orientation.elements[2];
 		torso_mat(1,0) = -skeleton[XN_SKEL_TORSO].orientation.orientation.elements[8];
 		torso_mat(2,0) = -skeleton[XN_SKEL_TORSO].orientation.orientation.elements[5];
-
 		torso_mat(0,1) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[0];
 		torso_mat(1,1) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[6];
 		torso_mat(2,1) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[3];
-
 		torso_mat(0,2) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[1];
 		torso_mat(1,2) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[7];
 		torso_mat(2,2) = skeleton[XN_SKEL_TORSO].orientation.orientation.elements[4];
@@ -727,30 +725,14 @@ usercmd_t CL_CreateCmd( void ) {
 		shoulder_mat(0,0) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[0];
 		shoulder_mat(1,0) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[6];
 		shoulder_mat(2,0) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[3];
-
-		shoulder_mat(0,1) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[1];
-		shoulder_mat(1,1) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[7];
-		shoulder_mat(2,1) = -skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[4];
-
+		shoulder_mat(0,1) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[1];
+		shoulder_mat(1,1) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[7];
+		shoulder_mat(2,1) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[4];
 		shoulder_mat(0,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[2];
 		shoulder_mat(1,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[8];
 		shoulder_mat(2,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[5];
 
-		// Eigen::Matrix3f shoulder_local = shoulder_mat;//*torso_mat.inverse().eval();
-
-		// Eigen::Matrix3f shoulder_local = torso_mat.inverse().eval()*shoulder_mat;
-		Eigen::Matrix3f shoulder_local = shoulder_mat;
-
-		// shoulder_local(0,0) = 1;
-		// shoulder_local(1,0) = 0;
-		// shoulder_local(2,0) = 0;
-		// shoulder_local(0,1) = 0;
-		// shoulder_local(1,1) = 1;
-		// shoulder_local(2,1) = 0;
-		// shoulder_local(0,2) = 0;
-		// shoulder_local(1,2) = 0;
-		// shoulder_local(2,2) = 1;
-
+		Eigen::Matrix3f shoulder_local = torso_mat.inverse().eval()*shoulder_mat;
 
 		for(int i = 0; i < 3; i ++) {
 			for(int j = 0; j < 3; j ++) {
