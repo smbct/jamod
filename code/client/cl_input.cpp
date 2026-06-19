@@ -731,20 +731,28 @@ usercmd_t CL_CreateCmd( void ) {
 		shoulder_mat(0,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[2];
 		shoulder_mat(1,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[8];
 		shoulder_mat(2,2) = skeleton[XN_SKEL_LEFT_SHOULDER].orientation.orientation.elements[5];
-
 		Eigen::Matrix3f shoulder_local = torso_mat.inverse().eval()*shoulder_mat;
-
 		for(int i = 0; i < 3; i ++) {
 			for(int j = 0; j < 3; j ++) {
 				cmd.rshoulder_orientation[i*3+j] = shoulder_local(i,j);
 			}
 		}
 
-		for(unsigned int i = 0; i < 9; i ++) {
-			// cmd.relbow_orientation[i] = skeleton[XN_SKEL_RIGHT_ELBOW].orientation.orientation.elements[i];
-						
-			cmd.relbow_orientation[i] = 0.;
-
+		Eigen::Matrix3f elbow_mat; 
+		elbow_mat(0,0) = -skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[0];
+		elbow_mat(1,0) = -skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[6];
+		elbow_mat(2,0) = -skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[3];
+		elbow_mat(0,1) = skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[1];
+		elbow_mat(1,1) = skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[7];
+		elbow_mat(2,1) = skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[4];
+		elbow_mat(0,2) = skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[2];
+		elbow_mat(1,2) = skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[8];
+		elbow_mat(2,2) = skeleton[XN_SKEL_LEFT_ELBOW].orientation.orientation.elements[5];
+		Eigen::Matrix3f elbow_local = torso_mat.inverse().eval()*elbow_mat;
+		for(int i = 0; i < 3; i ++) {
+			for(int j = 0; j < 3; j ++) {
+				cmd.relbow_orientation[i*3+j] = elbow_local(i,j);
+			}						
 		}
 
 		// Com_Printf("Passing kinect joint angles to ja!\n");
