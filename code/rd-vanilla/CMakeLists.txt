@@ -130,6 +130,7 @@ if(BuildSPRdVanilla OR BuildJK2SPRdVanilla)
 		"${SPDir}/rd-vanilla/tr_world.cpp"
 		"${SPDir}/rd-vanilla/tr_WorldEffects.cpp"
 		"${SPDir}/rd-vanilla/tr_WorldEffects.h"
+		"${SPDir}/rd-vanilla/tr_customvisualdebugging.cpp" # kinect mode custom file
 		)
 	source_group("renderer" FILES ${SPRDVanillaMainFiles})
 	set(SPRDVanillaFiles ${SPRDVanillaFiles} ${SPRDVanillaMainFiles})
