@@ -1221,6 +1221,12 @@ Ghoul2 Insert End
 */
 
 extern	cvar_t	*r_environmentMapping;
+
+// kinect mode
+extern	cvar_t	*r_drawbbox;
+extern	cvar_t	*r_drawskeleton;
+
+
 //====================================================================
 
 

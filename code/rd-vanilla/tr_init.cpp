@@ -185,6 +185,10 @@ cvar_t	*com_buildScript;
 cvar_t	*r_environmentMapping;
 cvar_t *r_screenshotJpegQuality;
 
+// kinect mode debug variables
+cvar_t *r_drawbbox;
+cvar_t *r_drawskeleton;
+
 #if !defined(__APPLE__)
 PFNGLSTENCILOPSEPARATEPROC qglStencilOpSeparate;
 #endif
@@ -1682,6 +1686,10 @@ Ghoul2 Insert End
 	r_screenshotJpegQuality				= ri.Cvar_Get( "r_screenshotJpegQuality",			"95",						CVAR_ARCHIVE_ND );
 
 	ri.Cvar_CheckRange( r_screenshotJpegQuality, 10, 100, qtrue );
+
+	// kinect mode debug variables
+	r_drawbbox = ri.Cvar_Get( "r_drawbbox", "1", CVAR_ARCHIVE_ND );
+	r_drawskeleton = ri.Cvar_Get( "r_drawskeleton", "1", CVAR_ARCHIVE_ND );
 
 	for ( size_t i = 0; i < numCommands; i++ )
 		ri.Cmd_AddCommand( commands[i].cmd, commands[i].func );

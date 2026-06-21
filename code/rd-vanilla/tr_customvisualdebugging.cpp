@@ -161,62 +161,7 @@ public:
 };
 
 
-
-// all bones
-// model_root
-// pelvis
-// Motion
-// lfemurYZ
-// lfemurX
-// ltibia
-// ltalus
-// rfemurYZ
-// rfemurX
-// rtibia
-// rtalus
-// lower_lumbar
-// upper_lumbar
-// thoracic
-// cervical
-// cranium
-// ceyebrow
-// jaw
-// lblip2
-// leye
-// rblip2
-// ltlip2
-// rtlip2
-// reye
-// rclavical
-// rhumerus
-// rhumerusX
-// rradius
-// rradiusX
-// rhand
-// r_d1_j1
-// r_d1_j2
-// r_d2_j1
-// r_d2_j2
-// r_d4_j1
-// r_d4_j2
-// rhang_tag_bone
-// lclavical
-// lhumerus
-// lhumerusX
-// lradius
-// lradiusX
-// lhand
-// l_d4_j1
-// l_d4_j2
-// l_d2_j1
-// l_d2_j2
-// l_d1_j1
-// l_d1_j2
-// ltail
-// rtail
-// lhang_tag_bone
-// face
-
+// custom definitions to facilitate drawing
 std::vector<std::string> all_bones = { 
 std::string("model_root"),
 std::string("pelvis"),
@@ -276,92 +221,39 @@ std::string("face"),
 };
 
 
+// define a list of bones to draw (drawing all of them can look quite messy)
 std::vector<std::string> keep_bones = { 
-// std::string("model_root"),
-// std::string("pelvis"),
-// std::string("Motion"),
-
 std::string("lfemurYZ"),
-// std::string("lfemurX"),
-
 std::string("ltibia"),
 std::string("ltalus"),
-
 std::string("rfemurYZ"),
-// std::string("rfemurX"),
-
 std::string("rtibia"),
 std::string("rtalus"),
-
 std::string("lower_lumbar"),
 std::string("upper_lumbar"),
-
 std::string("thoracic"),
 std::string("cervical"),
 std::string("cranium"),
-
-
 std::string("rhumerus"),
 std::string("rradius"),
-
-// std::string("rhumerusX"),
-// std::string("rradiusX"),
-
 std::string("lhumerus"),
 std::string("lradius"),
-
-// std::string("lhumerusX"),
-// std::string("lradiusX"),
-
 std::string("rhand"),
 std::string("lhand"),
-
-// std::string("rhang_tag_bone"),
-// std::string("lhang_tag_bone"),
-
 std::string("rclavical"),
 std::string("lclavical"),
-
 std::string("face"),
 };
 
 
-
+// list of bones for which we draw rotation matrices
 std::vector<std::string> keep_axis = { 
-
-// std::string("lfemurYZ"),
-// std::string("lfemurX"),
-
-// std::string("ltibia"),
-// std::string("ltalus"),
-
-// std::string("rfemurYZ"),
-// std::string("rfemurX"),
-
-// std::string("rtibia"),
-// std::string("rtalus"),
-
-// std::string("lower_lumbar"),
-// std::string("upper_lumbar"),
-
-// std::string("thoracic"),
-// std::string("cervical"),
-// std::string("cranium"),
-
-
 std::string("rhumerus"),
 std::string("rradius"),
-
 std::string("lhumerus"),
 std::string("lradius"),
-
 std::string("rhand"),
 std::string("lhand"),
-
-// std::string("rclavical"),
-// std::string("lclavical"),
-
-// std::string("face"),
 };
 
 void drawMatrix(std::vector<float>& pos, const mdxaBone_t& matrix) {
@@ -442,8 +334,12 @@ void drawSkeletons() {
 		humerus_angle_0 -= 360;
 	}
 
+	// the skeleton is drawn on top of everything
 	qglDepthRange( -1000, -1000 );
 
+	// drawing part
+	GL_Bind( tr.whiteImage );
+	GL_State( GLS_POLYMODE_LINE );
 
 	int model_entity_size = 0;
 
@@ -618,8 +514,8 @@ void drawSkeletons() {
 						humerus_angles[YAW] = res(0)*180./M_PI;
 						humerus_angles[PITCH] = res(1)*180./M_PI;
 						humerus_angles[ROLL] = -res(2)*180./M_PI;
-						Com_Printf("Extracted angles: %.3f %.3f %.3f\n", humerus_angles[PITCH], humerus_angles[YAW], humerus_angles[ROLL]);
-						Com_Printf("\n\n");						
+						// Com_Printf("Extracted angles: %.3f %.3f %.3f\n", humerus_angles[PITCH], humerus_angles[YAW], humerus_angles[ROLL]);
+						// Com_Printf("\n\n");						
 					}
 
 					Eorientations first, second, third;
@@ -757,23 +653,23 @@ void drawSkeletons() {
 								mdxaBone_t temp2;
 								Multiply_3x4Matrix(&temp2, temp, &skel->BasePoseMat); // DEST FIRST ARG
 
-								Com_Printf("local transformed bone humerus matrix:\n");
-								Com_Printf("%.3f %.3f %.3f\n", temp2.matrix[0][0], temp2.matrix[0][1], temp2.matrix[0][2]);
-								Com_Printf("%.3f %.3f %.3f\n", temp2.matrix[1][0], temp2.matrix[1][1], temp2.matrix[1][2]);
-								Com_Printf("%.3f %.3f %.3f\n", temp2.matrix[2][0], temp2.matrix[2][1], temp2.matrix[2][2]);
-								Com_Printf("\n\n");
+								// Com_Printf("local transformed bone humerus matrix:\n");
+								// Com_Printf("%.3f %.3f %.3f\n", temp2.matrix[0][0], temp2.matrix[0][1], temp2.matrix[0][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", temp2.matrix[1][0], temp2.matrix[1][1], temp2.matrix[1][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", temp2.matrix[2][0], temp2.matrix[2][1], temp2.matrix[2][2]);
+								// Com_Printf("\n\n");
 
-								Com_Printf("basePoseMat:\n");
-								Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMat.matrix[0][0], skel->BasePoseMat.matrix[0][1], skel->BasePoseMat.matrix[0][2]);
-								Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMat.matrix[1][0], skel->BasePoseMat.matrix[1][1], skel->BasePoseMat.matrix[1][2]);
-								Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMat.matrix[2][0], skel->BasePoseMat.matrix[2][1], skel->BasePoseMat.matrix[2][2]);
-								Com_Printf("\n\n");
+								// Com_Printf("basePoseMat:\n");
+								// Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMat.matrix[0][0], skel->BasePoseMat.matrix[0][1], skel->BasePoseMat.matrix[0][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMat.matrix[1][0], skel->BasePoseMat.matrix[1][1], skel->BasePoseMat.matrix[1][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMat.matrix[2][0], skel->BasePoseMat.matrix[2][1], skel->BasePoseMat.matrix[2][2]);
+								// Com_Printf("\n\n");
 
-								Com_Printf("basePoseInv:\n");
-								Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMatInv.matrix[0][0], skel->BasePoseMatInv.matrix[0][1], skel->BasePoseMatInv.matrix[0][2]);
-								Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMatInv.matrix[1][0], skel->BasePoseMatInv.matrix[1][1], skel->BasePoseMatInv.matrix[1][2]);
-								Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMatInv.matrix[2][0], skel->BasePoseMatInv.matrix[2][1], skel->BasePoseMatInv.matrix[2][2]);
-								Com_Printf("\n\n");
+								// Com_Printf("basePoseInv:\n");
+								// Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMatInv.matrix[0][0], skel->BasePoseMatInv.matrix[0][1], skel->BasePoseMatInv.matrix[0][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMatInv.matrix[1][0], skel->BasePoseMatInv.matrix[1][1], skel->BasePoseMatInv.matrix[1][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", skel->BasePoseMatInv.matrix[2][0], skel->BasePoseMatInv.matrix[2][1], skel->BasePoseMatInv.matrix[2][2]);
+								// Com_Printf("\n\n");
 							}
 
 							// compute bone position ?
@@ -809,11 +705,11 @@ void drawSkeletons() {
 								// multiply by the entity matrix
 								{mdxaBone_t temp;
 								
-								Com_Printf("eigen generated matrix:\n");
-								Com_Printf("%.3f %.3f %.3f\n", test_mat.matrix[0][0], test_mat.matrix[0][1], test_mat.matrix[0][2]);
-								Com_Printf("%.3f %.3f %.3f\n", test_mat.matrix[1][0], test_mat.matrix[1][1], test_mat.matrix[1][2]);
-								Com_Printf("%.3f %.3f %.3f\n", test_mat.matrix[2][0], test_mat.matrix[2][1], test_mat.matrix[2][2]);
-								Com_Printf("\n\n");
+								// Com_Printf("eigen generated matrix:\n");
+								// Com_Printf("%.3f %.3f %.3f\n", test_mat.matrix[0][0], test_mat.matrix[0][1], test_mat.matrix[0][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", test_mat.matrix[1][0], test_mat.matrix[1][1], test_mat.matrix[1][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", test_mat.matrix[2][0], test_mat.matrix[2][1], test_mat.matrix[2][2]);
+								// Com_Printf("\n\n");
 								
 								Multiply_3x4Matrix(&temp, &local_entity_matrix, &test_mat);
 								drawMatrix(custom_pos, temp);}
@@ -837,11 +733,11 @@ void drawSkeletons() {
 
 								Create_Matrix(angles, &test2); // angles to matrix
 
-								Com_Printf("ja generated matrix:\n");
-								Com_Printf("%.3f %.3f %.3f\n", test2.matrix[0][0], test2.matrix[0][1], test2.matrix[0][2]);
-								Com_Printf("%.3f %.3f %.3f\n", test2.matrix[1][0], test2.matrix[1][1], test2.matrix[1][2]);
-								Com_Printf("%.3f %.3f %.3f\n", test2.matrix[2][0], test2.matrix[2][1], test2.matrix[2][2]);
-								Com_Printf("\n\n");
+								// Com_Printf("ja generated matrix:\n");
+								// Com_Printf("%.3f %.3f %.3f\n", test2.matrix[0][0], test2.matrix[0][1], test2.matrix[0][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", test2.matrix[1][0], test2.matrix[1][1], test2.matrix[1][2]);
+								// Com_Printf("%.3f %.3f %.3f\n", test2.matrix[2][0], test2.matrix[2][1], test2.matrix[2][2]);
+								// Com_Printf("\n\n");
 
 								// Multiply_3x4Matrix(&temp, &test2, &skel->BasePoseMat);
 

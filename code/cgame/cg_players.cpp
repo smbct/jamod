@@ -2248,8 +2248,8 @@ static void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const ve
 		
 		// compute and set humerus angles
 		Eigen::Matrix<float,3,1> res_shoulder = m_shoulder.eulerAngles(2,1,0);
-		Com_Printf("Euler angles: \n");
-		Com_Printf("%.3f %.3f %.3f\n\n", res_shoulder(0)*180./3.1415, res_shoulder(1)*180./3.1415, res_shoulder(2)*180./3.1415);
+		// Com_Printf("Euler angles: \n");
+		// Com_Printf("%.3f %.3f %.3f\n\n", res_shoulder(0)*180./3.1415, res_shoulder(1)*180./3.1415, res_shoulder(2)*180./3.1415);
 		float humerus_angles[3];
 		humerus_angles[YAW] = res_shoulder(0)*180./M_PI;
 		humerus_angles[PITCH] = res_shoulder(1)*180./M_PI;

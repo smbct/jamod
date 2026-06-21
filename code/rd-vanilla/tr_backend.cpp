@@ -1449,8 +1449,14 @@ const void	*RB_DrawSurfs( const void *data ) {
 		RB_DrawGlowOverlay();
 	}
 
-	drawEntitiesBBox();
-	drawSkeletons();
+	// kinect mode
+	// visual debugging
+	if(r_drawbbox->value == 1) {
+		drawEntitiesBBox();
+	}
+	if(r_drawskeleton->value == 1) {
+		drawSkeletons();
+	}
 
 	return (const void *)(cmd + 1);
 }
