@@ -254,6 +254,7 @@ std::string("rhand"),
 std::string("lhand"),
 };
 
+// visualisation of a matrix by drawing the three axis
 void drawMatrix(std::vector<float>& pos, const mdxaBone_t& matrix) {
 
 	// 3x4 matrix
@@ -506,54 +507,6 @@ void drawSkeletons() {
 					// 5 3 4
 					// G2_Set_Bone_Angles(&ghoul2[model_ind], ghoul2[model_ind].mBlist, "rhumerus", humerus_angles_bis, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0, 0);
 
-					
-
-					// get coordinates of all bolts
-					std::vector<float[3]> bolt_pos(ghoul2[model_ind].mBltlist.size());
-					for(int bolt_ind = 0; bolt_ind < ghoul2[model_ind].mBltlist.size(); bolt_ind ++) {
-
-						// std::cout << "bolt index: " << bolt_ind << ", associated bone ind: " << ghoul2[model_ind].mBltlist[bolt_ind].boneNumber << std::endl; 
-
-						// model_ind, bolt_ind
-						G2_GetBoltMatrixLow(ghoul2[model_ind], bolt_ind, scale, retMatrix);
-						// std::cout << std::endl << std::endl << std::endl;
-						// std::cout << "called! size= " << ghoul2.size() << std::endl;
-
-						
-						G2_GenerateWorldMatrix(backEnd.refdef.entities[entity_ind].e.angles, backEnd.refdef.entities[entity_ind].e.origin);
-						Multiply_3x4Matrix(&matrix, &local_entity_matrix, &retMatrix);
-
-						// Com_Printf("Entity angles: %.3f %.3f %.3f\n", backEnd.refdef.entities[entity_ind].e.angles[0], backEnd.refdef.entities[entity_ind].e.angles[1], backEnd.refdef.entities[entity_ind].e.angles[2]);
-
-						p1[0] = matrix.matrix[0][3];
-						p1[1] = matrix.matrix[1][3];
-						p1[2] = matrix.matrix[2][3];
-
-						// record bolt positions
-						bolt_pos[bolt_ind][0] = matrix.matrix[0][3];
-						bolt_pos[bolt_ind][1] = matrix.matrix[1][3];
-						bolt_pos[bolt_ind][2] = matrix.matrix[2][3];
-						
-						p2[0] = p1[0] + 100;
-						p2[1] = p1[1] + 100;
-						p2[2] = p1[2] + 100;
-
-						// draw 3d local axis
-						// qglBegin (GL_LINES);
-						// qglColor3f (1,1,1);
-						// qglVertex3fv (bolt_pos[bolt_ind]);
-						// qglVertex3fv (p2);
-						// qglEnd();
-
-						// // float matrix[3][4];
-						// for(int i = 0; i < 3; i ++) {
-						// 	for(int j = 0; j < 4; j ++) {
-						// 		std::cout << retMatrix.matrix[i][j]  <<" "; 
-						// 	}
-						// 	std::cout << endl;
-						// }
-						// std::cout << std::endl << std::endl << std::endl;
-					}
 
 					// std::cout << "n bones alt: " << ghoul2[model_ind].mBoneCache->mNumBones << std::endl;
 					std::map<std::string, size_t> bone_name_ind; // retreive bone index from name 
@@ -832,7 +785,7 @@ void drawSkeletons() {
 						}
 
 
-
+						// draw the actual skeleton with white lines
 						for(size_t bone_ind = 0; bone_ind <  ghoul2[model_ind].mBoneCache->mNumBones; bone_ind ++) {
 							mdxaSkel_t			*skel;
 							mdxaSkelOffsets_t	*offsets;
@@ -844,7 +797,7 @@ void drawSkeletons() {
 								mdxaSkel_t * skel_child = (mdxaSkel_t *)((byte *)ghoul2[model_ind].aHeader + sizeof(mdxaHeader_t) + offsets->offsets[child_ind]);
 
 								if(std::find(keep_bones.begin(), keep_bones.end(), std::string(skel_child->name)) == keep_bones.end()) {
-									continue;	
+									continue; // do not draw all bones
 								}
 
 								for(int j = 0; j < 3; j ++) {
@@ -869,11 +822,9 @@ void drawSkeletons() {
 
 		}
 		
-
-		// qglTranslatef(-backEnd.refdef.entities[entity_ind].e.origin[0], -backEnd.refdef.entities[entity_ind].e.origin[1], -backEnd.refdef.entities[entity_ind].e.origin[2]);
-
 	}
 
+	// reset depth range
 	qglDepthRange( 0, 1 );
 
 }
