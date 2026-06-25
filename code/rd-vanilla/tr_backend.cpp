@@ -1440,8 +1440,9 @@ const void	*RB_DrawSurfs( const void *data ) {
 	if(r_drawskeleton->value == 1) {
 		drawSkeletons();
 	}
-
-	skeletonTests();
+	if(r_skeletondebugtests->value == 1) {
+		skeletonTests();
+	}
 
 
 	return (const void *)(cmd + 1);
