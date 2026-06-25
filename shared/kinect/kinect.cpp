@@ -81,21 +81,23 @@ int kinect_ready() {
 }
 
 //-------------------------------------------------------------------
-void kinect_getSkeleton(XnUserID player, skeleton& skeleton) {
+void kinect_getSkeleton(XnUserID player, skeleton_t& skeleton) {
 
 	if(kinect_status == 0) {
 		return;
 	}
 
-    skeleton.clear();
+    // skeleton.clear();
     for(auto& joint: joints) {
-
         XnSkeletonJointTransformation joint_transformation;
-
         g_UserGenerator.GetSkeletonCap().GetSkeletonJoint(player, joint, joint_transformation);
-
-        skeleton.insert(std::make_pair(joint, joint_transformation));
-    }
+        auto it = skeleton.find(joint);
+		if(it == skeleton.end()) {
+			skeleton.insert(std::make_pair(joint, joint_transformation));
+		} else {
+			skeleton[joint] = joint_transformation;
+		}
+	}
 
     // cout << joint.position.X << " ; " << joint.position.Y << " ; " << joint.position.Z << endl; 
 }

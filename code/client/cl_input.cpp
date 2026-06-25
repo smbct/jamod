@@ -683,6 +683,7 @@ CL_CreateCmd
 
 vec3_t cl_overriddenAngles = {0,0,0};
 qboolean cl_overrideAngles = qfalse;
+static skeleton_t last_skeleton;
 usercmd_t CL_CreateCmd( void ) {
 	usercmd_t	cmd;
 	vec3_t		oldAngles;
@@ -706,8 +707,21 @@ usercmd_t CL_CreateCmd( void ) {
 	#ifdef KINECT_MOD_ACTIVATED
 	int id = kinect_ready();
 	if(id < 16) {
-		skeleton skeleton;
+		
+		skeleton_t skeleton;
 		kinect_getSkeleton(id, skeleton);
+
+		float confidence_threshold = 0.7;
+
+		if(skeleton[XN_SKEL_TORSO].orientation.fConfidence <= confidence_threshold && last_skeleton.find(XN_SKEL_TORSO) != last_skeleton.end()) {
+            skeleton[XN_SKEL_TORSO] = last_skeleton[XN_SKEL_TORSO];
+        }
+		if(skeleton[XN_SKEL_LEFT_SHOULDER].orientation.fConfidence <= confidence_threshold && last_skeleton.find(XN_SKEL_LEFT_SHOULDER) != last_skeleton.end()) {
+            skeleton[XN_SKEL_LEFT_SHOULDER] = last_skeleton[XN_SKEL_LEFT_SHOULDER];
+        }
+		if(skeleton[XN_SKEL_LEFT_ELBOW].orientation.fConfidence <= confidence_threshold && last_skeleton.find(XN_SKEL_LEFT_ELBOW) != last_skeleton.end()) {
+            skeleton[XN_SKEL_LEFT_ELBOW] = last_skeleton[XN_SKEL_LEFT_ELBOW];
+        }
 
 		// multiply shoulder matrix by inverse torso matrix
 		Eigen::Matrix3f torso_mat;
@@ -754,6 +768,8 @@ usercmd_t CL_CreateCmd( void ) {
 				cmd.relbow_orientation[i*3+j] = elbow_local(i,j);
 			}						
 		}
+
+		last_skeleton = skeleton;
 
 		// Com_Printf("Passing kinect joint angles to ja!\n");
 		// Com_Printf("%.3f %.3f %.3f\n", shoulder_local(0,0), shoulder_local(0,1), shoulder_local(0,2));

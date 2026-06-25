@@ -21,7 +21,7 @@
 
 
         
-typedef std::map<XnSkeletonJoint, XnSkeletonJointTransformation> skeleton;
+typedef std::map<XnSkeletonJoint, XnSkeletonJointTransformation> skeleton_t;
 
 
 //------------------------------------------------
@@ -31,7 +31,7 @@ int kinect_init();
 void kinect_update();
 
 //------------------------------------------------
-void kinect_getSkeleton(XnUserID player, skeleton& skeleton);
+void kinect_getSkeleton(XnUserID player, skeleton_t& skeleton);
 
 //------------------------------------------------
 int kinect_ready();
