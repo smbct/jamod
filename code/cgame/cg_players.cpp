@@ -2204,9 +2204,8 @@ static void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const ve
 		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->lowerLumbarBone, llAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw);
 	}
 
-
 	// kinect mod
-	if ( cent->gent->client->NPC_class == CLASS_PLAYER ) {
+	if ( cent->gent->client->NPC_class == CLASS_PLAYER && cg_activatekinectmode.integer == 1) {
 
 		// Com_Printf("right shoulder rotation matrix shoulder\n");
 		// for(int i = 0; i < 3; i ++) {

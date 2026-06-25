@@ -21,3 +21,12 @@ In the GameData directory:
 If no save file: open consol ("small 2" key) and type `devmap t1_sour`
 Once a quicksave is performed: `./openjk_sp_x86 load auto`
 Or a normal save: `./openjk_sp_x86 load jedi_00`
+
+# additions
+
+## new cvars
+
+- `cg_activatekinectmode` set player angles from the kinect
+- `r_drawbbox` draw bounding boxes
+- `r_drawskeleton` draw the player skeleton
+- `r_skeletondebugtests` tests fixing skeleton angles

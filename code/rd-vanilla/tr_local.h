@@ -1225,6 +1225,7 @@ extern	cvar_t	*r_environmentMapping;
 // kinect mode
 extern	cvar_t	*r_drawbbox;
 extern	cvar_t	*r_drawskeleton;
+extern	cvar_t	*r_skeletondebugtests;
 
 
 //====================================================================

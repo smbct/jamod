@@ -641,11 +641,10 @@ typedef struct
 static postRender_t g_postRenders[MAX_POST_RENDERS];
 static int g_numPostRenders = 0;
 
-#include <iostream>
-using namespace std;
-
+// Kinect mod
 void drawEntitiesBBox();
 void drawSkeletons();
+void skeletonTests();
 
 void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	shader_t		*shader, *oldShader;
@@ -725,22 +724,6 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			continue;
 		}
 		R_DecomposeSort( drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted );
-
-		// my modding stuff
-		// {
-		// 	curEnt = &backEnd.refdef.entities[entityNum];
-		// 	cout << endl << endl;
-		// 	cout << "tesest from renderer !!" << endl;
-		// 	vec3_t bounds1; vec3_t bounds2;
-		// 	cout << "Model: " << curEnt->e.hModel << endl; 
-		// 	R_ModelBounds(curEnt->e.hModel, bounds1, bounds2);
-		// 	cout << "bounds1: " << bounds1[0] << " ; " << bounds1[1] << " ; " << bounds1[2] << endl;
-		// 	// cout << "bounds2: " << bounds2.x << " ; " << bounds2.y << " ; " << bounds2.z << endl;
-		// 	cout << endl << endl;
-
-		// 	// 	void	(*GetModelBounds)(refEntity_t *refEnt, vec3_t bounds1, vec3_t bounds2);
-
-		// }
 
 		// If we're rendering glowing objects, but this shader has no stages with glow, skip it!
 		if ( g_bRenderGlowingObjects && !shader->hasGlow )
@@ -1457,6 +1440,9 @@ const void	*RB_DrawSurfs( const void *data ) {
 	if(r_drawskeleton->value == 1) {
 		drawSkeletons();
 	}
+
+	skeletonTests();
+
 
 	return (const void *)(cmd + 1);
 }

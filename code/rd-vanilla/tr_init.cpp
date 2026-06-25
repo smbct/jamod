@@ -188,6 +188,7 @@ cvar_t *r_screenshotJpegQuality;
 // kinect mode debug variables
 cvar_t *r_drawbbox;
 cvar_t *r_drawskeleton;
+cvar_t *r_skeletondebugtests;
 
 #if !defined(__APPLE__)
 PFNGLSTENCILOPSEPARATEPROC qglStencilOpSeparate;
@@ -1690,6 +1691,7 @@ Ghoul2 Insert End
 	// kinect mode debug variables
 	r_drawbbox = ri.Cvar_Get( "r_drawbbox", "1", CVAR_ARCHIVE_ND );
 	r_drawskeleton = ri.Cvar_Get( "r_drawskeleton", "1", CVAR_ARCHIVE_ND );
+	r_skeletondebugtests = ri.Cvar_Get("r_skeletondebugtests", "1", CVAR_ARCHIVE_ND );
 
 	for ( size_t i = 0; i < numCommands; i++ )
 		ri.Cmd_AddCommand( commands[i].cmd, commands[i].func );
