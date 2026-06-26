@@ -1,0 +1,37 @@
+Bootstrap: localimage
+From: ../jamod_img.sif
+Stage: build
+
+%setup
+
+%files
+    # wiiuse library
+    wiiuse
+
+%environment
+    export TZ=Europe/Paris
+
+%post
+
+    # set time zone (https://stackoverflow.com/questions/62299928/r-installation-in-docker-gets-stuck-in-geographic-area)
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+    apt update
+    apt install -y libbluetooth-dev
+    
+    # compile and install wiiuse for wiimote support
+    cd wiiuse
+    rm -rf ./build
+    mkdir -p build && cd build
+    cmake ..
+    make -j4 && make install
+    cd ../../
+    rm -r wiiuse
+
+%labels
+    Author smbct
+    Version v0.0.1
+
+%help
+    Environment for ja mod development with the wiimote.
+    Builds on top of the kinect image.
