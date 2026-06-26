@@ -348,9 +348,12 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 		"${SharedDir}/sdl/sdl_icon.h"
 		)
 
-	#### kinect mod
+	#### kinect mod, wiimote mod
 	if(KinectMod)
 		set(SPEngineSysFiles "${SPEngineSysFiles}" "${SharedDir}/kinect/kinect.h" "${SharedDir}/kinect/kinect.cpp")
+	endif()
+	if(WiimoteMod)
+		set(SPEngineSysFiles "${SPEngineSysFiles}" "${SharedDir}/wiimote/wiimote.h" "${SharedDir}/wiimote/wiimote.cpp")
 	endif()
 	####
 
@@ -375,6 +378,9 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 	if(KinectMod)
 		list(APPEND SPEngineIncludeDirectories "/usr/include/ni")
     	list(APPEND SPEngineLibraries          -lOpenNI)
+	endif()
+	if(WiimoteMod)
+    	list(APPEND SPEngineLibraries          -lwiiuse -lbluetooth)	
 	endif()
 	####
 
@@ -454,6 +460,9 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 		# Kinect mod
 		if(KinectMod)
 			target_compile_definitions(${ProjectName} PRIVATE KINECT_MOD_ACTIVATED=1)
+		endif()
+		if(WiimoteMod)
+			target_compile_definitions(${ProjectName} PRIVATE WIIMOTE_MOD_ACTIVATED=1)
 		endif()
 
 		set_target_properties(${ProjectName} PROPERTIES INCLUDE_DIRECTORIES "${SPEngineIncludeDirectories}")

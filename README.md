@@ -9,6 +9,9 @@ make -j5 && make install
 ```
 
 To activate the kinect mod, use cmake option `-DKinectMod=ON`.
+To activate the wiimote mod, use cmake option `-DWiimoteMod=ON`.
+
+
 
 Running: 
 

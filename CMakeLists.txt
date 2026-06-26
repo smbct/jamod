@@ -55,8 +55,9 @@ option(BuildTests "Whether to build automatic unit tests (requires Boost)" OFF)
 option(UseAddressSanitizer "Whether to enable runtime address sanitizer" OFF)
 option(UseUndefinedSanitizer "Whether to enable runtime Undefined Behavior sanitizer" OFF)
 
-# kinect mod
+# kinect Wiimote mod
 option(KinectMod "Activate kinect mod" OFF)
+option(WiimoteMod "Activate wiimote mod" OFF)
 
 
 include(CMakeDependentOption)
