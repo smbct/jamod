@@ -303,6 +303,10 @@ extern	cvar_t	*cl_consoleKeys;
 extern	cvar_t	*cl_consoleUseScanCode;
 extern	cvar_t	*cl_consoleShiftRequirement;
 
+
+// kinect mod
+extern	cvar_t	*cl_wiimotestatus;
+
 //=================================================
 
 //

@@ -1,8 +1,33 @@
-709,762d708
+30d29
+< 			hide				kinectmod ;
+487d485
+< 				hide			kinectmod	;
+495d492
+< 				setitemcolor	kinectmodmenubutton forecolor 1 .682 0 1
+542d538
+< 				hide			kinectmod	;
+549d544
+< 				setitemcolor	kinectmodmenubutton forecolor 1 .682 0 1
+597d591
+< 				hide			kinectmod	;
+604d597
+< 				setitemcolor	kinectmodmenubutton forecolor 1 .682 0 1
+652d644
+< 				hide			kinectmod	;
+659d650
+< 				setitemcolor	kinectmodmenubutton forecolor 1 .682 0 1
+708d698
+< 				hide			kinectmod	;
+715,770d704
+< 				setitemcolor	kinectmodmenubutton forecolor 1 .682 0 1
+< 				setitemcolor	gamedefaultsmenubutton forecolor 1 .682 0 1
+< 			}
+< 		}
+< 
 < 		// kinect  button
 < 		itemDef 
 < 		{
-< 			name				modsmenubutton
+< 			name				kinectmodmenubutton
 < 			group				none
 < 			text				kinectmod
 < 			type				ITEM_TYPE_BUTTON
@@ -33,7 +58,6 @@
 < 				play			sound/interface/sub_select ;
 < 
 < 				defer			VideoSetup	ingamevideowarningMenu ;
-< 				uiScript		loadMods ;
 < 
 < 				show			setup_background ;
 < 				hide 			video ;
@@ -42,26 +66,96 @@
 < 				hide			vidrestart	;
 < 				hide			sound	;
 < 				hide			options ;
-< 				show			mods	;
+< 				hide			mods	;
+< 				show			kinectmod	;
 < 				hide			defaults ;
 < 				setitemcolor	video1menubutton forecolor 1 .682 0 1
 < 				setitemcolor	video2menubutton forecolor 1 .682 0 1
 < 				setitemcolor	soundmenubutton forecolor 1 .682 0 1
 < 				setitemcolor	gameoptionmenubutton forecolor 1 .682 0 1
-< 				setitemcolor	modsmenubutton forecolor 1 1 1 1 ;
-< 				setitemcolor	gamedefaultsmenubutton forecolor 1 .682 0 1
-< 			}
-< 		}
-< 
-771c717
+< 				setitemcolor	modsmenubutton forecolor 1 .682 0 1
+< 				setitemcolor	kinectmodmenubutton forecolor 0 1 0 1 ;
+783c717
 < 			rect				80 329 170 24
 ---
 > 			rect				80 305 170 24
-785c731
+797c731
 < 				setitemrect		sidebutton_glow	80 329 180 24
 ---
 > 				setitemrect		sidebutton_glow	80 305 180 24
-2472c2418
+818d751
+< 				hide			kinectmod	;
+826d758
+< 				setitemcolor	kinectmodmenubutton forecolor 1 .682 0 1
+2486c2418
 < 				"Espaï¿½ol"			"espanol"
 ---
 > 				"Español"			"espanol"
+2656,2722d2587
+< 
+< 
+< //----------------------------------------------------------------------------------------------
+< //   KINECT MOD MENU
+< //----------------------------------------------------------------------------------------------
+< 
+< itemDef 
+< 		{	
+< 			name				wiimote_status
+< 			group				kinectmod
+<       		type				ITEM_TYPE_TEXT
+< 			text				"wiimote status: disconnected"
+< 			rect				260 188 340 14
+< 	   		textalign			ITEM_ALIGN_RIGHT
+< 			textalignx			174
+< 			textaligny			0
+< 			font 				4					
+< 			textscale 			1
+< 			forecolor			.615 .615 .956 1
+< 			visible				0
+< 			descText			@MENUS_TOGGLE_TO_SHOW_OR_HIDE
+< 			action
+< 			{
+< 				play			"sound/interface/button1.wav"
+< 			}
+< 			mouseenter 
+< 			{ 
+< 				show			highlight1
+< 			}
+< 			mouseexit 
+< 			{ 
+< 				hide			highlight1
+< 			} 
+< 		}
+< 
+< 
+< 		itemDef 
+< 		{	
+< 			name				wiimote_connect_button
+< 			group				kinectmod
+<       		type				ITEM_TYPE_BUTTON
+< 			text				"Wiimote connect"
+< 			rect				260 202 340 14
+< 	   		textalign			ITEM_ALIGN_CENTER
+< 			textalignx			174
+< 			textaligny			0
+< 			font 				4					
+< 			textscale 			1
+< 			forecolor			1 .682 0 1
+< 			visible				0
+< 			descText			@MENUS_TOGGLE_TO_HAVE_THE_CROSSHAIR
+< 
+< 			action
+< 			{
+< 				play			"sound/interface/button1.wav"
+< 				script			wiimote_connect
+< 			}
+< 			mouseenter 
+< 			{ 
+< 				show			highlight2
+< 			}
+< 			mouseexit 
+< 			{ 
+< 				hide			highlight2
+< 			} 
+< 		}
+< 

@@ -34,6 +34,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 // kinect mod
 #include "../kinect/kinect.h"
+#include "../wiimote/wiimote.h"
 
 static char binaryPath[ MAX_OSPATH ] = { 0 };
 static char installPath[ MAX_OSPATH ] = { 0 };
@@ -183,7 +184,9 @@ static void NORETURN Sys_Exit( int ex ) {
 	#ifdef KINECT_MOD_ACTIVATED
 		kinect_clean();
 	#endif
-
+	#ifdef WIIMOTE_MOD_ACTIVATED
+		wiimote_clean();
+	#endif
 	Sys_PlatformExit();
 
 	Com_ShutdownHunkMemory();
@@ -798,6 +801,9 @@ int main ( int argc, char* argv[] )
 	// kinect mod
 	#ifdef KINECT_MOD_ACTIVATED
 		kinect_init();
+	#endif
+	#ifdef WIIMOTE_MOD_ACTIVATED
+		wiimote_init();
 	#endif
 
 	// main game loop

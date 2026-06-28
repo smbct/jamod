@@ -50,6 +50,10 @@ extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 #include "../qcommon/q_shared.h"
 #include "../qcommon/game_version.h"
 
+#ifdef WIIMOTE_MOD_ACTIVATED
+#include "../shared/wiimote/wiimote.h"
+#endif
+
 extern qboolean ItemParse_model_g2anim_go( itemDef_t *item, const char *animName );
 extern qboolean ItemParse_asset_model_go( itemDef_t *item, const char *name );
 extern qboolean ItemParse_model_g2skin_go( itemDef_t *item, const char *skinName );
@@ -1574,6 +1578,23 @@ static qboolean UI_RunMenuScript ( const char **args )
 		{
 			// TODO for MAC_PORT, will only be valid for non-JK2 mode
 		}
+		else if ( Q_stricmp( name, "wiimote_connect" ) == 0) // kinect mod
+		{
+			Com_Printf("Wiimote connect!\n");
+			itemDef_t *item;
+			menuDef_t *menu = Menu_GetFocused();
+
+			// if (menu)
+			// {
+			// 	item = (itemDef_s *) Menu_FindItemByName((menuDef_t *) menu, "wiimote_status");
+			// 	if (item)
+			// 	{
+			// 		item->text = "Wiimote status: connecting...";
+			// 	}
+			// }
+			// try to connect to the wiimote
+			wiimote_connect();
+		}		
 		else
 		{
 			Com_Printf("unknown UI script %s\n", name);
@@ -6564,5 +6585,40 @@ void ReadSaveDirectory (void)
 	}
 
 	qsort( s_savedata, s_savegame.saveFileCnt, sizeof(savedata_t), UI_SortSaveGames );
+
+}
+
+
+// kinect mod
+/*
+========================
+UI_UpdateWiimoteStatus
+========================
+*/
+void UI_UpdateWiimoteStatus( void )
+{
+
+	float wiimote_status = DC->getCVarValue("cl_wiimotestatus");
+
+	Com_Printf("wiimote_status cvar read value: %.3f\n\n\n", wiimote_status);
+
+	menuDef_t *menu = Menu_GetFocused();
+	if (menu)
+	{
+		itemDef_t *item = (itemDef_s *) Menu_FindItemByName((menuDef_t *) menu, "wiimote_status");
+		if (item)
+		{
+			Com_Printf("test setting text wiimote status\n");
+			if(wiimote_status < 0.5) {
+				item->text = "Wiimote status: disconnected";
+			} else if(wiimote_status >= 0.5 && wiimote_status <= 1.5) {
+				item->text = "Wiimote status: connecting...";
+			} else if(wiimote_status >= 1.5 && wiimote_status <= 2.5) {
+				item->text = "Wiimote status: connected";
+			}  else if(wiimote_status >= 1.5 && wiimote_status <= 2.5) {
+				item->text = "Wiimote status: connected";
+			}
+		}
+	}
 
 }

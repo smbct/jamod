@@ -80,6 +80,9 @@ cvar_t	*cl_consoleKeys;
 cvar_t	*cl_consoleUseScanCode;
 cvar_t	*cl_consoleShiftRequirement;
 
+// kinect mod
+cvar_t	*cl_wiimotestatus;
+
 clientActive_t		cl;
 clientConnection_t	clc;
 clientStatic_t		cls;
@@ -1300,6 +1303,11 @@ void CL_Init( void ) {
 	Cvar_Get ("snd", "jaden_fmle", CVAR_USERINFO | CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART );//UI_SetSexandSoundForModel changes to match sounds.cfg for model
 	Cvar_Get ("handicap", "100", CVAR_USERINFO | CVAR_SAVEGAME | CVAR_NORESTART);
 #endif
+
+	// kinect mod
+	cl_wiimotestatus = Cvar_Get ("cl_wiimotestatus", "0", CVAR_ARCHIVE_ND);
+
+	
 
 	//
 	// register our commands

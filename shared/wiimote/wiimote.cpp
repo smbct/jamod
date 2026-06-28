@@ -11,6 +11,9 @@
 #include "sys/sys_local.h"
 #include "client/client.h"
 
+// UI
+void UI_UpdateWiimoteStatus();
+
 #define MAX_WIIMOTES 4
 
 static wiimote** i_wiimotes =  nullptr;
@@ -34,21 +37,21 @@ void wiimote_init() {
 
   status = 0;
   Cvar_SetValue("cl_wiimotestatus", 0.f);
+  UI_UpdateWiimoteStatus();
 
 }
-
 
 
 //------------------------------------------------------------------------------
 void wiimote_connect_thread() {
 
   Cvar_SetValue("cl_wiimotestatus", 1.f);
+  UI_UpdateWiimoteStatus();
 
   status = 1;
 
   bool find = wiiuse_find(i_wiimotes, MAX_WIIMOTES, 5);
   Com_Printf("after wiimote found\n");
-
 
   if(find) {
 
@@ -57,6 +60,7 @@ void wiimote_connect_thread() {
 
     status = 2;
     Cvar_SetValue("cl_wiimotestatus", 2.f);
+    UI_UpdateWiimoteStatus();
 
     if(conn) {
 
@@ -79,18 +83,28 @@ void wiimote_connect_thread() {
 
       // set ir resolution
       wiiuse_set_ir(i_wiimote, 1);
+
       // activate motions
       wiiuse_motion_sensing(i_wiimote, 1);
 
       Cvar_SetValue("cl_wiimotestatus", 3.f);
       status = 3;
+      UI_UpdateWiimoteStatus();
+      
     }
 
     if(!find || !conn) {
-      Com_Printf("connection not successful :(\n");
+      Com_Printf("Wiimote connection not successful :(\n");
       Cvar_SetValue("cl_wiimotestatus", 0.f);
+      UI_UpdateWiimoteStatus();
     }
 
+  }
+
+  if(!find) {
+    Com_Printf("Wiimote connection not successful :(\n");
+    Cvar_SetValue("cl_wiimotestatus", 0.f);
+    UI_UpdateWiimoteStatus();
   }
 
 
