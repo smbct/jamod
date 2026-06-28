@@ -7,7 +7,7 @@
 < 			text				kinectmod
 < 			type				ITEM_TYPE_BUTTON
 < 			style				WINDOW_STYLE_EMPTY
-< 			rect				80 281 170 24
+< 			rect				80 305 170 24
 < 			font				3
 < 			textscale			0.9
 < 			textalignx			170
@@ -21,7 +21,7 @@
 < 			mouseEnter 
 < 			{ 
 < 				show			sidebutton_glow 
-< 				setitemrect		sidebutton_glow	80 281 180 24
+< 				setitemrect		sidebutton_glow	80 305 180 24
 < 			}
 < 			mouseExit 
 < 			{ 
@@ -53,3 +53,15 @@
 < 			}
 < 		}
 < 
+771c717
+< 			rect				80 329 170 24
+---
+> 			rect				80 305 170 24
+785c731
+< 				setitemrect		sidebutton_glow	80 329 180 24
+---
+> 				setitemrect		sidebutton_glow	80 305 180 24
+2472c2418
+< 				"Espaï¿½ol"			"espanol"
+---
+> 				"Español"			"espanol"

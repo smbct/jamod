@@ -465,6 +465,25 @@ if(BuildSPEngine OR BuildJK2SPEngine)
 			target_compile_definitions(${ProjectName} PRIVATE WIIMOTE_MOD_ACTIVATED=1)
 		endif()
 
+		# Kinect mod (ui)
+		if(KinectMod OR WiimoteMod)
+			execute_process(
+				COMMAND bash -c "${CMAKE_CURRENT_SOURCE_DIR}/ui/kinectmod/ui_setup.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_INSTALL_PREFIX}"
+			)
+
+			# custom menu
+			add_custom_target(
+				kinectmod_ui_output
+				DEPENDS ${CMAKE_BINARY_DIR}/ui/ingamesetup.menu ${CMAKE_BINARY_DIR}/ui/setup.menu
+			)
+			add_custom_command(
+				OUTPUT ${CMAKE_BINARY_DIR}/ui/ingamesetup.menu ${CMAKE_BINARY_DIR}/ui/setup.menu
+				COMMAND bash -c "${CMAKE_CURRENT_SOURCE_DIR}/ui/kinectmod/ui_install.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_INSTALL_PREFIX}"
+				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/ui/kinectmod/ui/ingamesetup.menu ${CMAKE_CURRENT_SOURCE_DIR}/ui/kinectmod/ui/setup.menu
+			)
+			add_dependencies(${ProjectName} kinectmod_ui_output)
+		endif()
+
 		set_target_properties(${ProjectName} PROPERTIES INCLUDE_DIRECTORIES "${SPEngineIncludeDirectories}")
 		set_target_properties(${ProjectName} PROPERTIES PROJECT_LABEL ${Label})
 		if(SPEngineLibraries)

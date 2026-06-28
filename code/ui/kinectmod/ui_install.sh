@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "first param $1" # source dir
-echo "second param $2" # build dir
-echo "third param $3" # install dir
+# echo "first param $1" # source dir
+# echo "second param $2" # build dir
+# echo "third param $3" # install dir
 
 # copy menu files to build dir
 cp $1/ui/kinectmod/ui/* $2/../ui
