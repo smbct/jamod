@@ -375,7 +375,21 @@ keyname_t keynames[MAX_KEYS] =
 	{ 0x13c, 0x13c, "AUX28", A_AUX28, false								},
 	{ 0x13d, 0x13d, "AUX29", A_AUX29, false								},
 	{ 0x13e, 0x13e, "AUX30", A_AUX30, false								},
-	{ 0x13f, 0x13f, "AUX31", A_AUX31, false								}
+	{ 0x13f, 0x13f, "AUX31", A_AUX31, false								},
+
+	{ 0x140, 0x140, "WIIMOTE A", A_WIIMOTEA, false								}, // Kinect mod, wiimote mod
+	{ 0x141, 0x141, "WIIMOTE B", A_WIIMOTEB, false								},
+	{ 0x142, 0x142, "WIIMOTE 1", A_WIIMOTE1, false								},
+	{ 0x143, 0x143, "WIIMOTE 2", A_WIIMOTE2, false								},
+	{ 0x144, 0x144, "WIIMOTE UP", A_WIIMOTEUP, false							},
+	{ 0x145, 0x145, "WIIMOTE DOWN", A_WIIMOTEDOWN, false						},
+	{ 0x146, 0x146, "WIIMOTE LEFT", A_WIIMOTELEFT, false						},
+	{ 0x147, 0x147, "WIIMOTE RIGHT", A_WIIMOTERIGHT, false						},
+	{ 0x148, 0x148, "WIIMOTE PLUS", A_WIIMOTEPLUS, false						},
+	{ 0x149, 0x149, "WIIMOTE MINUS", A_WIIMOTEMINUS, false						},
+	{ 0x14a, 0x14a, "WIIMOTE HOME", A_WIIMOTEHOME, false						},
+	{ 0x14b, 0x14b, "NUNCHUK C", A_NUNCHUKC, false								},
+	{ 0x14c, 0x14c, "NUNCHUK Z", A_NUNCHUKZ, false								}
 };
 static const size_t numKeynames = ARRAY_LEN( keynames );
 

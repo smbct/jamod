@@ -37,6 +37,8 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 // kinect mod
 #include "kinect/kinect.h"
+// wiimote mod
+#include "wiimote/wiimote.h"
 
 // Because renderer.
 #include "../rd-common/tr_public.h"
@@ -1437,6 +1439,9 @@ void Com_Frame( void ) {
 		// Kinect mod
 		#ifdef KINECT_MOD_ACTIVATED
 			kinect_update();
+		#endif
+		#ifdef WIIMOTE_MOD_ACTIVATED
+			wiimote_pollEvents();
 		#endif
 
 		lastTime = com_frameTime;

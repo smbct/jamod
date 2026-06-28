@@ -32,7 +32,6 @@ void wiimote_init() {
 
   i_wiimotes =  wiiuse_init(MAX_WIIMOTES);
 
-
   Com_Printf("Wiimote initialization\n");
 
   status = 0;
@@ -67,7 +66,7 @@ void wiimote_connect_thread() {
       Com_Printf("wiimote connection res: \n");
 
       // usleep(300000);
-      Sys_Sleep(3000);
+      // Sys_Sleep(3000); 
 
       for(int i = 0; i < MAX_WIIMOTES; i ++) {
     		if(i_wiimotes[i] && WIIMOTE_IS_CONNECTED(i_wiimotes[i]) ) {
@@ -82,10 +81,10 @@ void wiimote_connect_thread() {
       wiiuse_set_leds(i_wiimote, WIIMOTE_LED_3);
 
       // set ir resolution
-      wiiuse_set_ir(i_wiimote, 1);
+      // wiiuse_set_ir(i_wiimote, 1);
 
       // activate motions
-      wiiuse_motion_sensing(i_wiimote, 1);
+      // wiiuse_motion_sensing(i_wiimote, 1);
 
       Cvar_SetValue("cl_wiimotestatus", 3.f);
       status = 3;
@@ -242,13 +241,13 @@ void wiimote_pollEvents() {
         // Sys_QueEvent( 0, SE_WIIMOTEIR, irDx, irDy, 0, NULL );
 
         // nunchuk joystick
-        struct nunchuk_t* nc = (nunchuk_t*)&i_wiimote->exp.nunchuk;
-        int axis = 0;
-        Sys_QueEvent( 0, SE_JOYSTICK_AXIS, axis, nc->js.x*300, 0, NULL );
-        axis = 1;
-        Sys_QueEvent( 0, SE_JOYSTICK_AXIS, axis, nc->js.y*300, 0, NULL );
+        // struct nunchuk_t* nc = (nunchuk_t*)&i_wiimote->exp.nunchuk;
+        // int axis = 0;
+        // Sys_QueEvent( 0, SE_JOYSTICK_AXIS, axis, nc->js.x*300, 0, NULL );
+        // axis = 1;
+        // Sys_QueEvent( 0, SE_JOYSTICK_AXIS, axis, nc->js.y*300, 0, NULL );
 
-        Com_Printf("wiimote joystick: %f, %f\n", nc->js.x, nc->js.y);
+        // Com_Printf("wiimote joystick: %f, %f\n", nc->js.x, nc->js.y);
 
 
 

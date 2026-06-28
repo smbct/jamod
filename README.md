@@ -33,3 +33,4 @@ Or a normal save: `./openjk_sp_x86 load jedi_00`
 - `r_drawbbox` draw bounding boxes
 - `r_drawskeleton` draw the player skeleton
 - `r_skeletondebugtests` tests fixing skeleton angles
+-  `cl_wiimotestatus` indicate wiimote connection status 
