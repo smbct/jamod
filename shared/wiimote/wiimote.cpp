@@ -263,11 +263,8 @@ void wiimote_getIr(int* x, int* y) {
     // wiiuse_set_ir(i_wiimote, 1);
 
   }
-
-  
+ 
 }
-
-
 
 //------------------------------------------------------------------------------
 void wiimote_clean() {
@@ -276,7 +273,6 @@ void wiimote_clean() {
 
   status = 0;
   Cvar_SetValue("cl_wiimotestatus", 0.f);
-
 
   Com_Printf("Wiimote cleaning\n");
 

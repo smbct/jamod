@@ -1,0 +1,55 @@
+709,762d708
+< 		// kinect  button
+< 		itemDef 
+< 		{
+< 			name				modsmenubutton
+< 			group				none
+< 			text				kinectmod
+< 			type				ITEM_TYPE_BUTTON
+< 			style				WINDOW_STYLE_EMPTY
+< 			rect				80 281 170 24
+< 			font				3
+< 			textscale			0.9
+< 			textalignx			170
+< 			textaligny			2
+< 			textalign			ITEM_ALIGN_RIGHT
+< 			textstyle			1
+< 			forecolor			1 .682 0 1
+< 			visible				1
+< 			descText			@MENUS_CONFIGURE_GAME_OPTIONS
+< 
+< 			mouseEnter 
+< 			{ 
+< 				show			sidebutton_glow 
+< 				setitemrect		sidebutton_glow	80 281 180 24
+< 			}
+< 			mouseExit 
+< 			{ 
+< 				hide			sidebutton_glow 
+< 			}	  	  
+< 			
+< 			action 
+< 			{ 
+< 				play			sound/interface/sub_select ;
+< 
+< 				defer			VideoSetup	ingamevideowarningMenu ;
+< 				uiScript		loadMods ;
+< 
+< 				show			setup_background ;
+< 				hide 			video ;
+< 				hide			applyChanges ;
+< 				hide			video2 ;
+< 				hide			vidrestart	;
+< 				hide			sound	;
+< 				hide			options ;
+< 				show			mods	;
+< 				hide			defaults ;
+< 				setitemcolor	video1menubutton forecolor 1 .682 0 1
+< 				setitemcolor	video2menubutton forecolor 1 .682 0 1
+< 				setitemcolor	soundmenubutton forecolor 1 .682 0 1
+< 				setitemcolor	gameoptionmenubutton forecolor 1 .682 0 1
+< 				setitemcolor	modsmenubutton forecolor 1 1 1 1 ;
+< 				setitemcolor	gamedefaultsmenubutton forecolor 1 .682 0 1
+< 			}
+< 		}
+< 

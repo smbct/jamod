@@ -17,7 +17,7 @@ Stage: build
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
     apt update
-    apt install -y build-essential cmake libjpeg-dev libpng-dev zlib1g-dev libopengl-dev libgl-dev libsdl2-dev libeigen3-dev
+    apt install -y build-essential cmake libjpeg-dev libpng-dev zlib1g-dev libopengl-dev libgl-dev libsdl2-dev libeigen3-dev zip unzip
 
     bash install_openni_kinect.sh
 

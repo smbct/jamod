@@ -194,3 +194,8 @@ compile_commands.json
 #############
 [Bb]uild*/
 cmake-build-*
+
+#############
+## kinect mod
+#############
+code/ui/kinectmod/ui
