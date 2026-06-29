@@ -20,8 +20,6 @@ void UI_UpdateWiimoteStatus();
 static wiimote** i_wiimotes =  nullptr;
 static wiimote* i_wiimote = nullptr;
 
-
-static std::thread* con_thread = nullptr;
 static std::mutex wiimote_mutex;
 
 static int status = 0;
@@ -121,22 +119,8 @@ void wiimote_connect_thread() {
 
 //------------------------------------------------------------------------------
 void wiimote_connect() {
-
-  // if(con_thread != nullptr) {
-  //   if(con_thread->joinable()) {
-  //     con_thread->join();
-  //     delete con_thread;
-  //     con_thread = nullptr;
-  //   }
-  // }
-
-  // if(con_thread == nullptr) {
-  //   con_thread = new std::thread(wiimote_connect_thread);
-  // }
-
   std::thread wiimote_con_thread(wiimote_connect_thread);
   wiimote_con_thread.detach();
-
 }
 
 //------------------------------------------------------------------------------
@@ -310,14 +294,6 @@ void wiimote_clean() {
   Cvar_SetValue("cl_wiimotestatus", 0.f);
 
   Com_Printf("Wiimote cleaning\n");
-
-  if(con_thread != nullptr) {
-    if(con_thread->joinable()) {
-      con_thread->join();
-    }
-    delete con_thread;
-    con_thread = nullptr;
-  }
 
 }
 

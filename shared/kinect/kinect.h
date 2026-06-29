@@ -10,8 +10,6 @@
 
 #include <map>
 
-#include <thread>
-
 #define SAMPLE_XML_PATH "Config/SamplesConfig.xml"
 
 #define CHECK_RC(nRetVal, what)										\

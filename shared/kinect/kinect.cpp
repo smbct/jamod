@@ -9,24 +9,24 @@
 
 #include "qcommon/q_shared.h"
 
-#include <iostream>
+#include <thread>
 #include <mutex>
 
-using namespace std;
+#include <iostream>
 
-XnBool g_bPause;
+static XnBool g_bPause;
 
-xn::Context g_context;
-xn::ScriptNode g_scriptNode;
-xn::DepthGenerator g_DepthGenerator;
-xn::UserGenerator g_UserGenerator;
-xn::Player g_Player;
+static xn::Context g_context;
+static xn::ScriptNode g_scriptNode;
+static xn::DepthGenerator g_DepthGenerator;
+static xn::UserGenerator g_UserGenerator;
+static xn::Player g_Player;
 
-std::map<XnUInt32, std::pair<XnCalibrationStatus, XnPoseDetectionStatus> > m_Errors;
+static std::map<XnUInt32, std::pair<XnCalibrationStatus, XnPoseDetectionStatus> > m_Errors;
 
 // processing variables
-XnBool g_bNeedPose = FALSE;
-XnChar g_strPose[20] = "";
+static XnBool g_bNeedPose = FALSE;
+static XnChar g_strPose[20] = "";
 
 static constexpr const XnSkeletonJoint joints[] = {XN_SKEL_HEAD, XN_SKEL_NECK, XN_SKEL_TORSO, XN_SKEL_WAIST, 
 XN_SKEL_LEFT_COLLAR, XN_SKEL_LEFT_SHOULDER, XN_SKEL_LEFT_ELBOW, XN_SKEL_LEFT_WRIST, XN_SKEL_LEFT_HAND, XN_SKEL_LEFT_FINGERTIP,
@@ -55,7 +55,7 @@ std::make_pair(XN_SKEL_LEFT_HIP, XN_SKEL_RIGHT_HIP)};
 
 int kinect_status = 1;
 
-std::mutex kinect_mtx; 
+static std::mutex kinect_mutex; 
 
 //-------------------------------------------------------------------
 int kinect_ready() {
@@ -107,18 +107,12 @@ void kinect_getSkeleton(XnUserID player, skeleton_t& skeleton) {
 int kinect_init() {
 
 	kinect_status = 0;
-
     g_bPause = false;
-
     g_bNeedPose = FALSE;
 
 	xn::EnumerationErrors	errors;
 
-	cout << "hello openni" << endl;
-
     XnStatus nRetVal = XN_STATUS_OK;
-
-    
 
 	// Create a context with default settings
 	nRetVal = g_context.InitFromXmlFile(SAMPLE_XML_PATH, g_scriptNode, &errors);
@@ -225,8 +219,6 @@ int kinect_init() {
 //-------------------------------------------------------------------
 void kinect_clean() {
 
-    cout << "Kinect: cleaning the kinect object" << endl;
-
     g_scriptNode.Release();
 	g_DepthGenerator.Release();
 	g_UserGenerator.Release();
@@ -266,10 +258,10 @@ void kinect_update() {
 //-------------------------------------------------------------------
 void kinect_update_internal() {
 
-	kinect_mtx.lock();
+	kinect_mutex.lock();
 
 	if(kinect_status == 0) {
-		kinect_mtx.unlock();
+		kinect_mutex.unlock();
 		return;
 	}
 
@@ -288,7 +280,7 @@ void kinect_update_internal() {
 	// g_UserGenerator.GetUserPixels(0, sceneMD);
 	// DrawDepthMap(depthMD, sceneMD);
 
-	kinect_mtx.unlock();
+	kinect_mutex.unlock();
 }
 
 
@@ -329,7 +321,6 @@ void XN_CALLBACK_TYPE kinect_UserCalibration_CalibrationStart(xn::SkeletonCapabi
 //-------------------------------------------------------------------
 void XN_CALLBACK_TYPE kinect_UserCalibration_CalibrationComplete(xn::SkeletonCapability& /*capability*/, XnUserID nId, XnCalibrationStatus eStatus, void* /*pCookie*/)
 {
-
 
 	XnUInt32 epochTime = 0;
 	xnOSGetEpochTime(&epochTime);
