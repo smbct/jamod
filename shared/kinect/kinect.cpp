@@ -10,6 +10,7 @@
 #include "qcommon/q_shared.h"
 
 #include <iostream>
+#include <mutex>
 
 using namespace std;
 
@@ -26,8 +27,6 @@ std::map<XnUInt32, std::pair<XnCalibrationStatus, XnPoseDetectionStatus> > m_Err
 // processing variables
 XnBool g_bNeedPose = FALSE;
 XnChar g_strPose[20] = "";
-
-
 
 static constexpr const XnSkeletonJoint joints[] = {XN_SKEL_HEAD, XN_SKEL_NECK, XN_SKEL_TORSO, XN_SKEL_WAIST, 
 XN_SKEL_LEFT_COLLAR, XN_SKEL_LEFT_SHOULDER, XN_SKEL_LEFT_ELBOW, XN_SKEL_LEFT_WRIST, XN_SKEL_LEFT_HAND, XN_SKEL_LEFT_FINGERTIP,
@@ -55,6 +54,8 @@ std::make_pair(XN_SKEL_RIGHT_KNEE, XN_SKEL_RIGHT_FOOT),
 std::make_pair(XN_SKEL_LEFT_HIP, XN_SKEL_RIGHT_HIP)};
 
 int kinect_status = 1;
+
+std::mutex kinect_mtx; 
 
 //-------------------------------------------------------------------
 int kinect_ready() {
@@ -253,11 +254,22 @@ void XN_CALLBACK_TYPE kinect_User_NewUser(xn::UserGenerator& /*generator*/, XnUs
 
 }
 
-
 //-------------------------------------------------------------------
 void kinect_update() {
 
+	std::thread kinect_update_thread(kinect_update_internal);
+	kinect_update_thread.detach();
+
+}
+
+
+//-------------------------------------------------------------------
+void kinect_update_internal() {
+
+	kinect_mtx.lock();
+
 	if(kinect_status == 0) {
+		kinect_mtx.unlock();
 		return;
 	}
 
@@ -276,6 +288,7 @@ void kinect_update() {
 	// g_UserGenerator.GetUserPixels(0, sceneMD);
 	// DrawDepthMap(depthMD, sceneMD);
 
+	kinect_mtx.unlock();
 }
 
 

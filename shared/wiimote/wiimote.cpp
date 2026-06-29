@@ -3,6 +3,7 @@
 
 #include <wiiuse.h>
 #include <thread>
+#include <mutex>
 
 #include "qcommon/qcommon.h"
 #include "qcommon/q_shared.h"
@@ -21,11 +22,14 @@ static wiimote* i_wiimote = nullptr;
 
 
 static std::thread* con_thread = nullptr;
+static std::mutex wiimote_mutex;
 
 static int status = 0;
 
 static int prevIrX = 0;
 static int prevIrY = 0;
+
+void IN_MLookDown();
 
 //------------------------------------------------------------------------------
 void wiimote_init() {
@@ -38,11 +42,16 @@ void wiimote_init() {
   Cvar_SetValue("cl_wiimotestatus", 0.f);
   UI_UpdateWiimoteStatus();
 
+  // joycon joystick view control
+  IN_MLookDown();
+
 }
 
 
 //------------------------------------------------------------------------------
 void wiimote_connect_thread() {
+
+  wiimote_mutex.lock();
 
   Cvar_SetValue("cl_wiimotestatus", 1.f);
   UI_UpdateWiimoteStatus();
@@ -106,24 +115,27 @@ void wiimote_connect_thread() {
     UI_UpdateWiimoteStatus();
   }
 
-
+  wiimote_mutex.unlock();
 }
 
 
 //------------------------------------------------------------------------------
 void wiimote_connect() {
 
-  if(con_thread != nullptr) {
-    if(con_thread->joinable()) {
-      con_thread->join();
-      delete con_thread;
-      con_thread = nullptr;
-    }
-  }
+  // if(con_thread != nullptr) {
+  //   if(con_thread->joinable()) {
+  //     con_thread->join();
+  //     delete con_thread;
+  //     con_thread = nullptr;
+  //   }
+  // }
 
-  if(con_thread == nullptr) {
-    con_thread = new std::thread(wiimote_connect_thread);
-  }
+  // if(con_thread == nullptr) {
+  //   con_thread = new std::thread(wiimote_connect_thread);
+  // }
+
+  std::thread wiimote_con_thread(wiimote_connect_thread);
+  wiimote_con_thread.detach();
 
 }
 
@@ -257,6 +269,16 @@ void wiimote_pollEvents() {
 
       }
     }
+    // nunchuk joystick
+    struct nunchuk_t* nc = (nunchuk_t*)&i_wiimote->exp.nunchuk;
+    int axis = 0;
+    Sys_QueEvent( 0, SE_JOYSTICK_AXIS, axis, -nc->js.x*100, 0, NULL );
+    axis = 1;
+    Sys_QueEvent( 0, SE_JOYSTICK_AXIS, axis, -nc->js.y*100, 0, NULL );
+
+    // Sys_QueEvent( 0, SE_MOUSE, nc->js.x*300, nc->js.y*300, 0, NULL );
+
+    // Com_Printf("wiimote joystick: %f, %f\n", nc->js.x, nc->js.y);
   }
 
 

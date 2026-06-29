@@ -10,6 +10,8 @@
 
 #include <map>
 
+#include <thread>
+
 #define SAMPLE_XML_PATH "Config/SamplesConfig.xml"
 
 #define CHECK_RC(nRetVal, what)										\
@@ -29,6 +31,9 @@ int kinect_init();
 
 //------------------------------------------------
 void kinect_update();
+
+//------------------------------------------------
+void kinect_update_internal();
 
 //------------------------------------------------
 void kinect_getSkeleton(XnUserID player, skeleton_t& skeleton);
