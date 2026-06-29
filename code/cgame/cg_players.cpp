@@ -2203,70 +2203,6 @@ static void CG_G2ClientSpineAngles( centity_t *cent, vec3_t viewAngles, const ve
 		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->upperLumbarBone, ulAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw);
 		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->lowerLumbarBone, llAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw);
 	}
-
-	// kinect mod
-	if ( cent->gent->client->NPC_class == CLASS_PLAYER && cg_activatekinectmode.integer == 1) {
-
-		// Com_Printf("right shoulder rotation matrix shoulder\n");
-		// for(int i = 0; i < 3; i ++) {
-		// 	for(int j = 0; j < 3; j ++) {
-		// 		Com_Printf("%f ", cent->gent->client->ps.rshoulder_orientation[i*3+j]);
-		// 	}
-		// 	Com_Printf("\n");
-		// }
-
-		// float norm = 0.;
-		// for(int i = 0; i < 3; i ++) {
-		// 	norm += cent->gent->client->ps.rshoulder_orientation[i]*cent->gent->client->ps.rshoulder_orientation[i];
-		// }
-		// Com_Printf("Test norm rotation matrix: %.3f\n", norm);
-
-		// Compute euler angles with eigen
-		Eigen::Matrix3f m_shoulder, m_elbow;
-
-		m_shoulder(0,0) = cent->gent->client->ps.rshoulder_orientation[0];
-		m_shoulder(0,1) = cent->gent->client->ps.rshoulder_orientation[1];
-		m_shoulder(0,2) = cent->gent->client->ps.rshoulder_orientation[2];
-		m_shoulder(1,0) = cent->gent->client->ps.rshoulder_orientation[3];
-		m_shoulder(1,1) = cent->gent->client->ps.rshoulder_orientation[4];
-		m_shoulder(1,2) = cent->gent->client->ps.rshoulder_orientation[5];
-		m_shoulder(2,0) = cent->gent->client->ps.rshoulder_orientation[6];
-		m_shoulder(2,1) = cent->gent->client->ps.rshoulder_orientation[7];
-		m_shoulder(2,2) = cent->gent->client->ps.rshoulder_orientation[8];
-		
-		m_elbow(0,0) = cent->gent->client->ps.relbow_orientation[0];
-		m_elbow(0,1) = cent->gent->client->ps.relbow_orientation[1];
-		m_elbow(0,2) = cent->gent->client->ps.relbow_orientation[2];
-		m_elbow(1,0) = cent->gent->client->ps.relbow_orientation[3];
-		m_elbow(1,1) = cent->gent->client->ps.relbow_orientation[4];
-		m_elbow(1,2) = cent->gent->client->ps.relbow_orientation[5];
-		m_elbow(2,0) = cent->gent->client->ps.relbow_orientation[6];
-		m_elbow(2,1) = cent->gent->client->ps.relbow_orientation[7];
-		m_elbow(2,2) = cent->gent->client->ps.relbow_orientation[8];
-
-		
-		// compute and set humerus angles
-		Eigen::Matrix<float,3,1> res_shoulder = m_shoulder.eulerAngles(2,1,0);
-		// Com_Printf("Euler angles: \n");
-		// Com_Printf("%.3f %.3f %.3f\n\n", res_shoulder(0)*180./3.1415, res_shoulder(1)*180./3.1415, res_shoulder(2)*180./3.1415);
-		float humerus_angles[3];
-		humerus_angles[YAW] = res_shoulder(0)*180./M_PI;
-		humerus_angles[PITCH] = res_shoulder(1)*180./M_PI;
-		humerus_angles[ROLL] = -res_shoulder(2)*180./M_PI;
-		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angles, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0);
-
-		// compute and set radius angles
-		Eigen::Matrix<float,3,1> res_elbow = m_elbow.eulerAngles(2,1,0);
-		float radius_angles[3];
-		radius_angles[YAW] = res_elbow(0)*180./M_PI;
-		radius_angles[PITCH] = res_elbow(1)*180./M_PI;
-		radius_angles[ROLL] = -res_elbow(2)*180./M_PI;
-		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, radius_angles, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0);
-
-
-	}
-
-
 }
 
 static void CG_G2ClientNeckAngles( centity_t *cent, const vec3_t lookAngles, vec3_t headAngles, vec3_t neckAngles, vec3_t thoracicAngles, vec3_t headClampMinAngles, vec3_t headClampMaxAngles )
@@ -2565,6 +2501,64 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t angles )
 	//float		swing, scale;
 	//int			i;
 	qboolean	looking = qfalse, talking = qfalse;
+
+
+	// kinect mod
+	static bool kinect_was_tracking = false;
+	if ( cent->gent && cent->gent->client->NPC_class == CLASS_PLAYER && cg_activatekinectmode.integer == 1) {
+
+		if(!kinect_was_tracking) {
+			kinect_was_tracking = true;
+		}
+
+		// Compute euler angles with eigen
+		Eigen::Matrix3f m_shoulder, m_elbow;
+
+		m_shoulder(0,0) = cent->gent->client->ps.rshoulder_orientation[0];
+		m_shoulder(0,1) = cent->gent->client->ps.rshoulder_orientation[1];
+		m_shoulder(0,2) = cent->gent->client->ps.rshoulder_orientation[2];
+		m_shoulder(1,0) = cent->gent->client->ps.rshoulder_orientation[3];
+		m_shoulder(1,1) = cent->gent->client->ps.rshoulder_orientation[4];
+		m_shoulder(1,2) = cent->gent->client->ps.rshoulder_orientation[5];
+		m_shoulder(2,0) = cent->gent->client->ps.rshoulder_orientation[6];
+		m_shoulder(2,1) = cent->gent->client->ps.rshoulder_orientation[7];
+		m_shoulder(2,2) = cent->gent->client->ps.rshoulder_orientation[8];
+		
+		m_elbow(0,0) = cent->gent->client->ps.relbow_orientation[0];
+		m_elbow(0,1) = cent->gent->client->ps.relbow_orientation[1];
+		m_elbow(0,2) = cent->gent->client->ps.relbow_orientation[2];
+		m_elbow(1,0) = cent->gent->client->ps.relbow_orientation[3];
+		m_elbow(1,1) = cent->gent->client->ps.relbow_orientation[4];
+		m_elbow(1,2) = cent->gent->client->ps.relbow_orientation[5];
+		m_elbow(2,0) = cent->gent->client->ps.relbow_orientation[6];
+		m_elbow(2,1) = cent->gent->client->ps.relbow_orientation[7];
+		m_elbow(2,2) = cent->gent->client->ps.relbow_orientation[8];
+
+		// compute and set humerus angles
+		Eigen::Matrix<float,3,1> res_shoulder = m_shoulder.eulerAngles(2,1,0);
+		// Com_Printf("Euler angles: \n");
+		// Com_Printf("%.3f %.3f %.3f\n\n", res_shoulder(0)*180./3.1415, res_shoulder(1)*180./3.1415, res_shoulder(2)*180./3.1415);
+		float humerus_angles[3];
+		humerus_angles[YAW] = res_shoulder(0)*180./M_PI;
+		humerus_angles[PITCH] = res_shoulder(1)*180./M_PI;
+		humerus_angles[ROLL] = -res_shoulder(2)*180./M_PI;
+		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, humerus_angles, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0);
+
+		// compute and set radius angles
+		Eigen::Matrix<float,3,1> res_elbow = m_elbow.eulerAngles(2,1,0);
+		float radius_angles[3];
+		radius_angles[YAW] = res_elbow(0)*180./M_PI;
+		radius_angles[PITCH] = res_elbow(1)*180./M_PI;
+		radius_angles[ROLL] = -res_elbow(2)*180./M_PI;
+		BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, radius_angles, BONE_ANGLES_REPLACE, NEGATIVE_Z, POSITIVE_Y, NEGATIVE_X, 0);
+
+	} 
+	if (kinect_was_tracking && cent->gent->client->NPC_class == CLASS_PLAYER && cg_activatekinectmode.integer == 0) {
+		cent->gent->ghoul2[0].mBlist[cent->gent->humerusRBone].flags &= ~(BONE_ANGLES_TOTAL);
+		cent->gent->ghoul2[0].mBlist[cent->gent->radiusRBone].flags &= ~(BONE_ANGLES_TOTAL);
+		kinect_was_tracking = false;
+	}
+
 
 	if ( cent->gent
 		&& (cent->gent->flags&FL_NO_ANGLES) )
@@ -3093,6 +3087,9 @@ static void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t angles )
 			//return;
 		}
 	}
+
+
+	
 }
 
 static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3] )
@@ -8009,50 +8006,6 @@ extern void WP_SaberUpdateOldBladeData( gentity_t *ent );
 				}
 			}
 		}
-
-		// std::cout  << std::endl << std::endl;
-		// std::cout<< "test entity bone angles " << std::endl;
-		// std::cout  << std::endl << std::endl;
-		
-		// extern void BG_G2SetBoneAngles( centity_t *cent, gentity_t *gent, int boneIndex, const vec3_t angles, const int flags, const Eorientations up, const Eorientations left, const Eorientations forward, qhandle_t *modelList );
-
-		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->upperLumbarBone, vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw );
-
-		// moving humerus
-		// cg_humerusRBone_angle_0.value += 0.3;
-		// if(cg_humerusRBone_angle_0.value > 360) {
-		// 	cg_humerusRBone_angle_0.value -= 360;
-		// }
-
-
-		// moving radius
-		// cg_radiusRBone_angle_0.value += 0.1;
-		// if(cg_radiusRBone_angle_0.value > 360) {
-		// 	cg_radiusRBone_angle_0.value -= 360;
-		// }
-		
-			// cg_humerusRBone_angle_0.value = 0.;
-			// cg_humerusRBone_angle_1.value = 0.;
-			// cg_humerusRBone_angle_2.value = 0.;
-
-		// cg_humerusRBone_angle_0 -> green axis
-		// cg_humerusRBone_angle_1 -> red axis
-		// cg_humerusRBone_angle_2 -> blue axis
-		
-		// red is aligned toward the arm bone
-
-		// try to compute angles for an orientation relative to the entity, and not relative to the connected bone
-		
-		// these angles are relative to the bone we are connected to
-
-		float angles_humerus[3] = {cg_humerusRBone_angle_0.value, cg_humerusRBone_angle_1.value, cg_humerusRBone_angle_2.value};
-
-		float angles_radius[3] = {cg_radiusRBone_angle_0.value, cg_radiusRBone_angle_1.value, cg_radiusRBone_angle_2.value};
-
-		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->humerusRBone, angles_humerus, BONE_ANGLES_REPLACE, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
-
-		// BG_G2SetBoneAngles( cent, cent->gent, cent->gent->radiusRBone, angles_radius, BONE_ANGLES_PREMULT, POSITIVE_X, POSITIVE_Y, POSITIVE_Z, cgs.model_draw);
-
 	}
 	else
 	{
